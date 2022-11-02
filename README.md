@@ -1,169 +1,171 @@
-- [Чат-бот](#Чат-бот)
-- [Создание бота](#Создание-бота)
-    - [Учётные данные бота](#Учётные-данные-бота)
-- [Отправка запроса в Compass](#Отправка-запроса-в-Compass)
-    - [Схема получения подписи для запроса](#Схема-получения-подписи-для-запроса)
-    - [Ответ от Compass после отправки запроса](#Ответ-от-Compass-после-отправки-запроса)
-    - [Получение результата отправленного запроса](#Получение-результата-отправленного-запроса)
-- [Webhook и реагирование на команды](#Webhook-и-реагирование-на-команды)
-    - [Версия webhook бота](#Версия-webhook-бота)
-- [Список методов Compass Userbot API](#Список-методов-Compass-Userbot-API)
-- [Дополнительное форматирование сообщений](#Дополнительное-форматирование-сообщений)
-- [Ошибки при выполнении запроса Compass Userbot API](#Ошибки-при-выполнении-запроса-Compass-Userbot-API)
-- [Библиотека для работы с API чат-ботов приложения Compass](#Библиотека-для-работы-с-API-чат-ботов-приложения-Compass)
+[![en](https://img.shields.io/badge/lang-en-green.svg)](https://github.com/getCompass/userbot/blob/master/README.md)
+[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/getCompass/userbot/blob/master/README_ru.md)
 
-## Чат-бот ##
+- [Chatbot](#Chatbot)
+- [Creating a bot](#Creating-a-bot)
+  - [Bot credentials](#Bot-credentials)
+- [Sending a request to Compass](#Sending-a-request-to-Compass)
+  - [Scheme for obtaining a signature for the request](#Scheme-for-obtaining-a-signature-for-the-request)
+  - [Response from Compass after sending a request](#Response-from-Compass-after-sending-a-request)
+  - [Getting the result of the sent request](#Getting-the-result-of-the-sent-request)
+- [Webhook and responding to commands](#Webhook-and-responding-to-commands)
+  - [Bot Webhook version](#Bot-Webhook-version)
+- [Compass Userbot API methods](#Compass-Userbot-API-methods)
+- [Additional message formatting](#Additional-message-formatting)
+- [Errors in executing the Compass Userbot API request](#Errors-in-executing–the-Compass-Userbot-API-request)
+- [Library for Compass Chatbot API](#Library-for-Compass-Chatbot-API)
+## Chatbot ##
 
-Чат-боты представляют собой специальные аккаунты, созданные для того, чтобы выполнять действия внутри приложения Compass от лица бота.
+Chatbots are special accounts created to perform actions within the Compass application on behalf of the bot.
 
-Наш чат-бот умеет:
-- отправлять сообщение пользователю или в групповой диалог;
-- ставить реакции на сообщения;
-- отправлять файлы в диалог;
-- получать основную информацию по участникам компании (user_id, имя, URL файла-аватарки).
+Our chatbot knows how to:
+- Send a message to a user or to a group chat
+- Add reactions to messages
+- Send files to a chat
+- Collect basic information on company members (user_id, name, URL of an avatar file)
 
-Перечисленные действия реализуются через специальные запросы, описанные в разделе [Список методов Compass Userbot API](#Список-методов-Compass-Userbot-API).
+The actions listed above are implemented through special requests described in [Compass Userbot API methods](#Compass-Userbot-API-methods).
 
-Также, если включить режим "Реагировать на команды", бот начнёт реагировать на команды, которые вы укажете, и перенаправлять их на адрес вашего webhook (подробнее в разделе [Webhook и реагирование на команды](#Webhook-и-реагирование-на-команды)).
+Also, if you enable "Respond to commands" mode, the bot will start responding to commands that you specify and redirect them to your webhook address (more details in [Webhook and responding to commands](#Webhook-and-responding-to-commands)).
 
-## Создание бота ##
+## Creating a bot ##
 
-Создание бота доступно человеку, имеющему роль Программиста в компании.<br>
-Данную роль может выдать руководитель компании через меню компании (открывается при нажатии на название компании, затем — "Настройки", и далее — "Настроить роли"):
+Creating a bot is available to a person who has a Programmer's role in the company.<br>
+This role can be given by the company executive using the company menu (by clicking on the company name, then — "Settings", and then — "Set up roles"):
 
-| ![](screenshots/3289dc6cf96a6f7e.png) |
-| --- |
+| ![](screenshots/en/uhrvj5kzleid9x17n.png) |
+|-----------------------------------------|
 
-| ![](screenshots/3ea4aa2cfe458eee.png) |
-| --- |
+| ![](screenshots/en/poronorgdutmiwwfk.png) |
+|-----------------------------------------|
 
-После добавления роли пользователю у него в меню компании появится новый функционал для управления ботами:
+After adding a role to a user, a new functionality for managing bots will appear in their menu:
 
-| ![](screenshots/0d36f5eecf1ffdb9.png) |
-| --- |
+| ![](screenshots/en/4h4ajtl1c7942w02v.png) |
+|------------------------------------------|
 
-| ![](screenshots/2cfb5a53db196b84.png) |
-| --- |
+| ![](screenshots/en/i52yotwf05cy03wrq.png) |
+|------------------------------------------|
 
-При создании бота вы можете установить:
+When creating a bot, you can set up the following:
 
-- имя новому боту;
-- описание, для чего служит бот;
-- webhook, куда будут перенаправлены команды от пользователей.<br>
+- name of a new bot;
+- description of what the bot is used for;
+- webhook to which user commands will be redirected.<br>
 
-Webhook — это URL-адрес вашего сервиса. После его установки бот может реагировать на созданные Программистом сообщения-команды, перенаправляя их на указанный вами адрес.
+Webhook is the URL of your service. After installing it, the bot is enabled to respond to the Programmer's commands by redirecting them to the address you specified.
 
-| ![](screenshots/b81e61812885347f.png) |
-| --- |
+| ![](screenshots/en/st0i28z6us011ag6g.png) |
+|-------------------------------------------|
 
-#### Учётные данные бота
-После создания бота в локации "Карточка бота" вам будут предоставлены **Токен** и **Ключ подписи** нового бота (видны только Программисту вашей компании).
+#### Bot credentials
+After creating a bot in the "Bot Card" section, you will get a **Token** and a **Signature Key** for the new bot (visible only to your company's Programmer).
 
-**Токен бота (token)** — уникальный для каждого бота идентификатор.
+**The bot token** is a unique identifier for each bot.
 
-| ![](screenshots/ef6531cacbd2c92d.png) |
-| --- |
+| ![](screenshots/en/9ndy89erq98s3vuky.png) |
+|------------------------------------------|
 
-**Ключ подписи** — ключ для генерации подписи (signature), которой подписывается каждый отправляемый запрос. Необходим для подтверждения, что запрос отправлен от вашего бота.
+**The signature key** is the key for generating a signature, which is used to sign each sent request. It is required to confirm that the request was sent from your bot.
 
-| ![](screenshots/3ca47f9b18d663bc.png) |
-| --- |
+| ![](screenshots/en/on7bftvy98gwuzq9n.png) |
+|-------------------------------------------|
 
-⚠️ Обратите внимание: **не сообщайте Токен и Ключ подписи** вашего бота третьим лицам.<br>
-В случае если это произошло, рекомендуется воспользоваться сменой ключа подписи в приложении Compass через настройки бота:
+⚠️ Warning: **Do not disclose your bot's Token and Signature Key** to the third parties.<br>
+If this happens, it is recommended to change the signature key in the Compass application through the bot settings:
 
-| ![](screenshots/588b32b7c096e179.png) |
-| --- |
+| ![](screenshots/en/ozdihrnawiaky9fz1.png) |
+|------------------------------------------|
 
-Таким образом, все запросы бота, которые использовали скомпрометированный ключ подписи, станут недействительными для приложения Compass.
+Thus, all bot requests that used the compromised signature key will become invalid for the Compass application.
 
-## Отправка запроса в Compass ##
+## Sending a request to Compass ##
 
-Запросы к Compass Userbot API должны осуществляться через HTTPS-запрос методом POST, отправленный на endpoint: <br>
-`https://userbot.getcompass.com/api/v2/` + (выполняемый метод)<br>
+Requests to the Compass Userbot API must be sent via an HTTPS request by the POST method sent to endpoint: <br>
+`https://userbot .getcompass.com/api/v2/` + (method being executed)<br>
 
-Все запросы должны использовать тип содержимого: **application/json**.<br>
-Для загрузки файлов: **multipart/form-data**.
+All requests must use the content type: **application/json**.<br>
+To upload files: **multipart/form-data**.
 
-Тело каждого запроса к Compass должно содержать:
-- **json-строку** требуемых параметров для запроса (пустой, если данные не требуются).
+The body of each request to Compass must contain the following:
+- **json string** of required parameters for the request (empty if no data is required).
 
-Авторизация запроса осуществляется через **header**-заголовки с использованием токена вашего бота и сгенерированной подписи:<br>
-- заголовок "**Authorization: bearer={токен бота}**" - заголовок содержит токен, который принадлежит вашему боту (бот должен быть включён для этого);
-- заголовок "**Signature: signature={сгенерированная подпись}**" - в заголовке передаётся подпись для валидации данных запроса (подробнее в разделе [Схема получения подписи для запроса](#Схема-получения-подписи-для-запроса)).
+Request authorization is done via **headers** using your bot's token and generated signature:<br>
+- header "**Authorization: bearer={bot token}**" - the header contains a token that belongs to your bot (the bot must be enabled for this);
+- header "**Signature: signature={generated signature}**" - a signature is passed in the header to validate the request data (for more information, see [Scheme for obtaining a signature for the request](#Scheme-for-obtaining-a-signature-for-the-request)).
 
-Все методы регистрозависимы и должны быть в кодировке UTF-8.
+All methods are case sensitive and must be UTF-8 encoded.
 
 --- 
 
-Рассмотрим запрос на примере отправки сообщения пользователю.
+Let's consider a request using the example of sending a message to a user.
 
-Используется метод [/user/send](#post-usersend).<br>
-URL для отправляемого запроса: `https://userbot.getcompass.com/api/v2/user/send` <br>
+The  [/user/send](#post-usersend) method is used.<br>
+URL for the request being sent: `https://userbot.getcompass.com/api/v2/user/send` <br>
 
-Пример параметров для запроса:
+Example parameters for a request:
 ```json5
 {
-    "text": "Hello, this is bot", // произвольный текст для нового сообщения от бота
-    "type": "text",               // указываем, что сообщение является текстовым
-    "user_id": 12345              // идентификатор пользователя, которому отправляется сообщение
+  "text": "Hello, this is bot", // any text for a new message from the bot 
+  "type": "text", // indicate that the message is a text 
+  "user_id": 12345 // the ID of the user to whom the message is sent
 }
 ```
 
-Структура curl-запроса:<br>
+Curl request structure:<br>
 <pre style="white-space:pre-wrap;">
-curl -X POST -d "<b>{параметры в json-формате}</b>"
+curl-X POST -d "<b>{parameters in json format}</b>"
 -H "Content-Type: application/json"
--H "Authorization: bearer=<b>{токен бота}</b>" 
--H "Signature: signature=<b>{сгенерированная подпись}</b>" 
+-H "Authorization: bearer=<b>{bot token}</b>"
+-H "Signature: signature=<b>{generated signature}</b>"
 https://userbot.getcompass.com/api/v2/user/send
 </pre>
 
 
 ---
 
-Бот может отправить сообщение в группу, участником которой является, конкретному
-пользователю, а также в тред к сообщению.
+The bot can send a message to the group of which it is a member, a particular user,
+as well as in the thread to the message.
 
-При отправке запроса вам необходимо указать, куда будет отправлено сообщение от бота:
+When sending a request, you need to specify where the message from the bot will be sent to:
 
-- если необходимо отправить пользователю, требуется ID пользователя, для которого предназначено сообщение;
-- если необходимо отправить сообщение в группу, нужен уникальный ключ этой группы;
-- если необходимо отправить сообщение в тред, нужен ключ сообщения, для которого будет создан тред.
+- if you need to send it to a user, the ID of the user (the message receiver) is required;
+- if you need to send it to a group, you need a unique key of this group;
+- if you need to send it to a thread, you need the message key for which the thread will be created.
 
-#### ID пользователя
+#### User ID
 
-Идентификатор пользователя (параметр "user_id" в запросах) используется при отправке сообщения конкретному пользователю. Его можно получить в приложении Compass через локацию "Карточка
-сотрудника" (доступно только Программисту вашей компании):
+The user ID (the "user_id" parameter in requests) is used when sending a message to a specific user. It cn be found in the Compass app under "
+Employee Card" (available only to members of your company with the "Programmer" role):
 
-| ![](screenshots/2523a2ad3d4e6e21.png) |
-| --- |
+| ![](screenshots/en/ggr9xlshwpwzabbex.png) |
+|------------------------------------------|
 
-#### Ключ диалога
+#### Chat Key
 
-Уникальный идентификатор группы (используется как "group_id" в запросах), участником которой является бот.<br>
-Доступен для Программиста из локации "Меню чат-бота" в групповом диалоге:
+The unique identifier of the group (used as "group_id" in requests) of which the bot is a member.<br>
+Available to a member with the "Programmer" role under "Chatbot Menu" in the group chat:
 
-| ![](screenshots/da1c148a1e636c58.png) |
-| --- |
+| ![](screenshots/en/joe56zi6pbx3phsur.png) |
+|------------------------------------------|
 
-Пример ключа диалога:
+Example of a chat key:
 
 > 3brLYUVlCEbNg6A0m6W2X2zkPyY8PN3Ijw6efI20gVJHGiy4xHOociXAmMh1o/i01gLTS8wHHx7JGrrzIL4zDC6a4qX031dzJfqTzl8MD6Rqv2wd38yfGLS6n6VlwmPQ2hNNXCDPEL9sddmYCfHSSY/BfjXsNvJh3YpBH1pRf1I=
 
-#### Ключ сообщения
+#### Message Key
 
-Идентификатор сообщения (используется как "message_id" в запросах), с которым работает бот. Пример ключа сообщения:
+The identifier of a message (used as "message_id" in requests) that the bot is working with. Example of a chat key:
 > oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8vqbF5vNIi4T/YEKZh4yF4iLXo9J4pW/4UguVkB0XY9/vF5pzUHUL4eVr3ScGWEP3fUEWdNlws+pffgp9oUOl+X0HrFxXxuFVfREy6od/psN+lob
 
 ---
 
-#### Схема получения подписи для запроса ####
+#### Scheme for obtaining a signature for the request ####
 
-Для получения подписи необходимо выполнить следующие действия:
+To get a signature, follow these steps:
 
-- для примера возьмём запрос отправки сообщения от бота конкретному пользователю (метод [/user/send](#post-usersend));
-- указываем параметры и значения для тела запроса:
+- for example, let's take a request to send a message from a bot to a specific user (the [/user/send](#post-usersend));
+- specify parameters and values for the request body:
 >```json5  
 >{
 >    "user_id": 12345,
@@ -171,33 +173,33 @@ https://userbot.getcompass.com/api/v2/user/send
 >    "type": "text"
 >}
 >```
-- преобразуем передаваемые данные в формат json;
-- получаем json-строку вида: `{"user_id":12345,"text":"Hello, this is bot","type":"text"}`;
-- объединяем строки токена бота и полученную json-строку: `<токен бота> + <полученная json-строка>`
-- после чего применяем функцию для генерации hash-строки на основе ключа шифрования, используя метод хэширования HMAC и алгоритм шифрования SHA256.<br>
->**hash_hmac("sha256", <токен бота> + <полученная json-строка>, <ключ подписи вашего бота>)**
->- hash_hmac — функция для генерации хэш-строки на основе ключа подписи вашего бота;
->- sha256 — используемый алгоритм шифрования;
+- convert the transmitted data to json format;
+- get a json string of the following type: `{"user_id":12345,"text":"Hello, this is bot","type":"text"}`;
+- combine the bot token strings and the resulting json string: `<bot token> + <received json string>`;
+- after that, use the function to generate a hash string based on the encryption key using the HMAC hashing method and the SHA256 encryption algorithm.<br>
+>**hash_hmac("sha256", <bot token> + <received json string>, <your bot's signature key>)**
+>- hash_hmac is a function for generating a hash string based on your bot's signature key;
+>- sha256 — the encryption algorithm used;
 
-Полученная строка является подписью, которая передаётся в header-заголовке запроса:<br>
-**Signature: signature={сгенерированная подпись}**:
+The received string is a signature that is passed in the header of the request:<br>
+**Signature: signature={generated signature}**:
 
-⚠️ Обратите внимание на следующий момент:
-- полученная подпись (signature) **актуальна только** для текущих токена, ключа подписи и параметров запроса. Если один из них поменяется, то необходимо
-   будет сгенерировать подпись заново по той же схеме.
+⚠️ Pay attention to the following:
+- the received signature is **relevant only** for the current token, signature key, and request parameters. If one of them changes, it will be necessary
+  to generate the signature again according to the same scheme.
 
 ---
 
-#### Ответ от Compass после отправки запроса ####
+#### Response from Compass after sending a request ####
 
-Ответ представляет собой json-объект, в котором содержатся поля:
-- **status** (string) — отражает статус выполнения запроса.<br>
-  Может принимать значение "ok" (в случае, если запрос выполнился успешно) или "error" (в случае ошибки);
-- **response** (json) — json-объект произвольных данных.
+The response is a json object that contains the fields:
+- **status** (string) — is for the status of the request execution.<br>
+  It can take the value "ok" (in case the request was executed successfully) or "error" (in case of an error);
+- **response** (json) — is a json object of arbitrary data.
 
-В случае успешного выполнения поле response может иметь данные выполненного запроса, либо пустое значение.
+If successful, the response field may have the data of the executed request, or an empty value.
 
-**Пример ответа с возвращаемыми данными:**
+**Example of a response with returned data:**
 ```json5 
 {
     "status": "ok",
@@ -207,7 +209,7 @@ https://userbot.getcompass.com/api/v2/user/send
 }
 ```
 
-**Пример пустого ответа:**
+**Example of an empty response:**
 ```json5 
 {
     "status": "ok",
@@ -215,12 +217,12 @@ https://userbot.getcompass.com/api/v2/user/send
 }
 ```
 
-Если произошла ошибка, поле **status** будет принимать значение "error".<br>
-В таком случае поле **response** будет содержать поля:
-- **error_code** (int) — код ошибки. Более подробно расписано в разделе [Ошибки при выполнении запроса Compass Userbot API](#Ошибки-при-выполнении-запроса-Compass-Userbot-API);
-- **message** (string) — произвольный текст ошибки.
+If an error has occurred, the **status** field will take the value "error".<br>
+In this case, the **response** field will contain the fields:
+- **error_code** (int) — error code. For more details, see the section [Errors when executing the Compass Usbot API request](#Errors-when-executing-the-Compass-Usbot-API-request);
+- **message** (string) — arbitrary error text.
 
-**Пример ответа с ошибкой:**
+**Example of an error response:**
 ```json5 
 {
     "status": "error",
@@ -231,17 +233,17 @@ https://userbot.getcompass.com/api/v2/user/send
 }
 ```
 
-#### Получение результата отправленного запроса ####
+#### Getting the result of the sent request ####
 
-Все запросы к Compass, за исключением метода [/request/get](#post-requestget) и загрузки файла, выполняются асинхронно.<br>
-Потому после выполнения запроса для получения результата необходимо запрашивать его по полученному идентификатору — `request_id`.
-Это уникальный идентификатор выполняемого запроса в приложении Compass.
+All requests to Compass, except for the [/request/get](#post-requestget) method and file upload, are executed asynchronously.<br>
+Therefore, after executing the request, it is necessary to get the result by the received identifier — `request_id`.
+This is the unique identifier of the request being executed in the Compass application.
 
-После успешной отправки запроса в Compass вы можете c интервалом 0.5c запрашивать результат выполнения с помощью метода [/request/get](#post-requestget).<br>
+After successfully sending a request to Compass, you can request the result of execution with a 0.5 seconds interval using the [/request/get](#post-requestget).<br>
 
-Рассмотрим схему получения результата на примере отправки сообщения от бота:
-- выполним запрос [/user/send](#post-usersend), передав текст: Hello, this is bot :blush:
-- ответ запроса будет содержать его `request_id`:
+Let's look at the scheme of getting the result by the example of sending a message from a bot:
+- execute the [/user/send](#post-usersend), request by sending the text: Hello, this is bot :blush:
+- the request response will contain its `request_id`:
 ```json5 
 {
     "status": "ok",
@@ -250,9 +252,9 @@ https://userbot.getcompass.com/api/v2/user/send
     }
 }
 ```
-- в этот момент запрос взят на обработку, чтобы отправить сообщение пользователю от лица бота;
-- вызов метода [/request/get](#post-requestget) с передачей `request_id` вернёт состояние указанного запроса:
-> Если запрос ещё в процессе выполнения:
+- at this moment, the request is taken for processing to send a message to the user on behalf of the bot;
+- calling the [/request/get](#post-requestget) method with sending `request_id` will return the state of the specified request:
+> If the request is still in progress:
 >
 >```json5 
 >{
@@ -263,8 +265,8 @@ https://userbot.getcompass.com/api/v2/user/send
 >    }
 >}
 >```
-- такой ответ означает, что запрос ещё не выполнился — достаточно немного подождать (рекомендуем интервал не чаще чем 0.5с), после чего повторно запросить результат с помощью [/request/get](#post-requestget);
-- в случае когда сообщение успешно отправлено, метод вернёт результат выполнения запроса — в данном примере это message_id отправленного ботом сообщения:
+- such a response means that the request has not been executed yet — it is enough to wait a little (we recommend an interval of no more than 0.5 seconds), then re-request the result using [/request/get](#post-requestget);
+- if the message is successfully sent, the method will return the result of executing the request — in this example, it is the message_id of the message sent by the bot:
 >```json5
 >{
 >     "status": "ok",
@@ -274,117 +276,117 @@ https://userbot.getcompass.com/api/v2/user/send
 >}
 >```
 
-| ![](screenshots/60d55eb514422765.png) |
-| --- |
+| ![](screenshots/en/vgwwsuavuiynz36bm.png) |
+|------------------------------------------|
 
-## Webhook и реагирование на команды
+## Webhook and responding to commands
 
-Бот может реагировать на специальные команды-сообщения, добавленные Программистом с помощью метода [/command/update](#post-commandupdate):
+The bot can respond to special commands added by the Programmer using the [/command/update](#post-commandupdate):
 
-| ![](screenshots/73475d48f02d915c.png) |
-| --- |
+| ![](screenshots/en/4ekq5flhdzjpg0sd2.png) |
+|------------------------------------------|
 
-Установленные команды будут видны каждому участнику компании на экране "Карточка бота":
+The preset commands will be visible to each company member under "Bot Card" section:
 
-| ![](screenshots/f33c04c8fed72915.png) |
-| --- |
+| ![](screenshots/en/ux7cqqdpionaigt0s.png) |
+|------------------------------------------|
 
-Когда пользователь отправляет сообщение-команду боту, у которого включён режим "Реагировать на команды" и установлен webhook, то на указанный адрес отправляются данные вида:
+When a user sends a command to a bot with "Respond to commands" mode enabled, and a webhook is installed, the data of the following form is sent to the specified address:
 
-> Если команда была отправлена в групповом диалоге
+> If the command was sent in a group chat
 >
 >```json5 
 >{
 >    "group_id": "3brLYUVlCEbNg6A0m6W2X2zkPyY8PN3Ijw6efI20gVJHGiy4xHOociXAmMh1o/i01gLTS8wHHx7JGrrzIL4z...",
 >    "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8vqbF5vNIi4T/YEKZh...",
->    "text": "/покажи список команд"
+>    "text": "/show command list"
 >    "type": "group",
 >    "user_id": 12345,
 >}
 >```
 
-- group_id — ключ группового диалога, откуда отправлена команда;
-- message_id — уникальный идентификатор сообщения-команды;
-- text — текст команды, переданной боту;
-- type — указывает, откуда пришла команда (single — диалог с ботом; group — групповой диалог);
-- user_id — идентификатор пользователя в приложении Compass, который отправил команду.
+- group_id — is for the key of the group chat from which the command was sent;
+- message_id — is for the unique identifier of the command;
+- text — is for the text of the command sent to the bot;
+- type — indicates where the command came from (single — private chat with the bot; group — group chat);
+- user_id — is for the identifier of the Compass app user who sent the command.
 
-> Если команда была отправлена в личном диалоге с ботом
+> If the command was sent in a private chat with the bot
 >
 >```json5 
 >{
 >     "group_id": "",
 >     "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8vqbF5vNIi4T/YEKZh...",
->     "text": "/покажи список команд"
+>     "text": "/show command list"
 >     "type": "single",
 >     "user_id": 12345,
 >}
 >```
 
-⚠️ Обратите внимание: на ваш сервис отправляются только те сообщения, текст которых совпадает с шаблоном команд, прописанных Программистом вашей компании. **Другие сообщения из диалога не отправляются на webhook**.
+⚠️ Please note: only those messages are sent to your service, the text of which matches the template of commands prescribed by your company's Programmer. **Other messages from the chat are not sent to the webhook**.
 
-Запрос будет подписан header-заголовком с использованием токена того бота, которому принадлежит отправленная команда:<br>
->заголовок "**Authorization: bearer={токен бота}**".<br>
+The request will be signed with a header using the token of the bot to which the sent command belongs:<br>
+>header "**Authorization: bearer={bot token}**".<br>
 
-Также в запросе будет передан header-заголовок, содержащий сгенерированную подпись для отправляемых данных (созданная по стандартной [схеме получения подписи](#Схема-получения-подписи-для-запроса)):<br>
->заголовок "**Signature: signature={сгенерированная подпись}**".<br>
+The request will also contain a header with the generated signature for the data being sent (created according to the standard signature [receipt scheme](#receipt-scheme)):<br>
+>the title "**Signature: signature={generated signature}**".<br>
 
-Получив данные на ваш webhook, вы можете:
-- по токену проверить, что запрос пришёл для вашего бота;
-- сгенерировать подпись, после чего сравнить с hash-строкой в заголовке "Signature". При совпадении строк вы тем самым можете убедиться, что данные отправлены из приложения Compass, а не третьими лицами.
+After receiving the data on your webhook, you can:
+- check by token that the request came for your bot;
+- generate a signature, then compare it with the hash string in the "Signature" header. If the strings match, you can thereby make sure that the data was sent from the Compass application, and not by third parties.
 
-#### Версия webhook бота
+#### Bot Webhook version
 
-Каждый чат-бот Compass имеет версию для webhook, которая позволяет более гибко взаимодействовать с Userbot API при изменениях api.<br>
+Each Compass chatbot has a webhook version that allows for more flexible interaction with the Userbot API when API changes.<br>
 
-Рассмотрим пример:<br>
-В новой версии Userbot API изменился формат данных, отправляемых на адрес вашего webhook, к примеру, появился новый тип диалога:
+Let's take an example:<br>
+In the new version of the Usbot API, the format of data sent to your webhook address has changed, for example, a new chat type has appeared:
 >type: "group/single/ **(new) channel**"
 
-В таком случае бот, используемый вами до изменений, будет иметь версию webhook, которую новые изменения **не затронут**, и на адрес вашего webhook будут отправляться данные известного вам формата.<br>
-После того как с вашей стороны будут учтены новые изменения, вы можете с помощью метода [/webhook/setVersion](#post-webhooksetversion) переключить версию webhook на актуальный.
+In this case, the bot you used before the changes will have a webhook version that the new changes will not affect, and data of a format known to you will be sent to your webhook address.<br>
+After the new changes are taken into account on your part, you can use the [/webhook/setVersion](#post-webhooksetversion) method to switch the version of the webhook to the current one.
 
-## Список методов Compass Userbot API
+## Compass Userbot API methods
 
-| Метод | Для чего используется |
-| :--- | :--- |
-| [/request/get](#post-requestget) | получить результат выполнения запроса. |
-| [/user/send](#post-usersend) | отправить сообщение от бота конкретному пользователю. |
-| [/group/send](#post-groupsend) | отправить сообщение от бота в групповой диалог. |
-| [/thread/send](#post-threadsend) | отправить сообщение от бота в тред. |
-| [/message/addReaction](#post-messageaddreaction) | добавить реакцию на сообщение от лица бота. |
-| [/message/removeReaction](#post-messageremovereaction) | удалить реакцию бота с сообщения. |
-| [/user/getList](#post-usergetlist) | получить данные об участниках компании. |
-| [/group/getList](#post-groupgetlist) | получить данные групп, в которых состоит бот. |
-| [/command/update](#post-commandupdate) | обновить список команд бота. |
-| [/command/getList](#post-commandgetlist) | получить список команд бота. |
-| [/webhook/setVersion](#post-webhooksetversion) | установить версию для webhook бота. |
-| [/webhook/getVersion](#post-webhookgetversion) | получить текущую версию webhook бота. |
-| [/file/getUrl](#post-filegeturl) | получить URL для загрузки файлов. |
+| Method | What is it used for                                |
+| :--- |:---------------------------------------------------|
+| [/request/get](#post-requestget) | get the result of executing the request.           |
+| [/user/send](#post-usersend) | send a message from the bot to a specific user.    |
+| [/group/send](#post-groupsend) | send a message from the bot to the group chat.     |
+| [/thread/send](#post-threadsend) | send a message from the bot to the thread.         |
+| [/message/addReaction](#post-messageaddreaction) | add a reaction to the message on behalf of the bot.|
+| [/message/removeReaction](#post-messageremovereaction) | remove the bot's reaction from the message.                  |
+| [/user/getList](#post-usergetlist) | get data about the company members.            |
+| [/group/getList](#post-groupgetlist) | get the data of the groups that the bot is a member of.      |
+| [/command/update](#post-commandupdate) | update the list of bot commands.                       |
+| [/command/getList](#post-commandgetlist) | get a list of bot commands.                       |
+| [/webhook/setVersion](#post-webhooksetversion) | install the version for the bot webhook.                |
+| [/webhook/getVersion](#post-webhookgetversion) | get the current version of the bot webhook.              |
+| [/file/getUrl](#post-filegeturl) | get the URL for uploading files.                  |
 
-## Описание методов
+## Description of methods
 
 ### `POST /request/get`
 
-Метод для получения результата отправленного запроса.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/request/get` <br>
+A method for getting the result of the sent request.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/request/get` <br>
 
-В случае успешного выполнения вернётся результат выполнения запроса.<br>
-В теле запроса должны быть указаны следующие параметры:
+If successful, the result of executing the request will be returned.<br>
+The following parameters must be specified in the request body:
 
-| Название | Тип | Свойство | Описание | 
+| Name | Type | Property | Description | 
 | -------- | --- | --- | -------- |
-| request_id | string | обязательный | идентификатор отправленного запроса в приложение Compass. |
+| request_id | string | required | ID of the request sent to the Compass app. |
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {"request_id": "2f991a80-750c-4abc-b7e1-1f16456de59d"}
 ```
 
-Результат выполнения запроса (например, запросили информацию об участниках компании)
+The result of executing the request (for example, information about the company's participants was requested)
 ```json5 
 {
      "status": "ok",
@@ -392,12 +394,12 @@ URL для запроса: `https://userbot.getcompass.com/api/v2/request/get` <
           "user_list": [
                {
                     "user_id": 1,
-                    "user_name": "Иванов Иван",
+                    "user_name": "John Dow",
                     "avatar_file_url": ""
                },
                {
                     "user_id": 2,
-                    "user_name": "Михаилов Михаил",
+                    "user_name": "Mike Johnson",
                     "avatar_file_url": "https://file-1.getcompass.com/files/pivot/dca/e8d/632/fa7/51f/fdcaee3ecea91e6c_w400.jpeg"
                }
           ]
@@ -407,46 +409,47 @@ URL для запроса: `https://userbot.getcompass.com/api/v2/request/get` <
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 1000 | переданы некорректные данные (например, параметр request_id, который отсутствует в базе). |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 1000 | incorrect data was transferred (for example, the request_id parameter, which is missing from the database). |
 
 ---
 
 ### `POST /user/send`
 
-Метод для отправки сообщения от бота пользователю.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/user/send`
+A method for sending a message from a bot to a user.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/user/send`
 
-В теле запроса должны быть указаны следующие параметры:
+The following parameters must be specified in the request body:
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| user_id | int | обязательный | id пользователя, которому бот отправит сообщение в личный диалог. |
-| text | string | обязательный, если не передан параметр file_id | текст сообщения от бота. |
-| file_id | string | обязательный, если не передан параметр text | идентификатор файла для сообщения-файла.<br> О получении file_id подробнее расписано в [данном разделе](#post-filegeturl). |
-| type | string | обязательный | для текстовых сообщений необходимо передавать в этот параметр значение = "text".<br>для сообщений-файлов необходимо передавать в этот параметр значение = "file". |
+| user_id | int | required | the ID of the user to whom the bot will send a message in a private chat. |
+| text | string | required if the file_id parameter is not transferred | the text of the bot message. |
+| file_id | string | required if the text parameter is not transferred | the file identifier for a file message.<br> See more about file_id in [this section](#post-filegeturl). |
+| type | string | required | for text messages, the value = "text" must be sent to this parameter.<br>for file messages, the value = "file" must be sent to this parameter. |
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет:<br>
-message_id (string) — ключ сообщения, отправленного ботом.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+result of this method will be:<br>
+message_id (string) — the key of the message sent by the bot.
+
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {
-     "text": "Привет, это сообщение от бота",
+     "text": "Hi, this is a message from a bot",
      "type": "text",
      "user_id": 12345
 }
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -458,48 +461,48 @@ message_id (string) — ключ сообщения, отправленного 
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 1000 | переданы некорректные данные (например, не передан один из параметров). |
-| 1001 | выбранный пользователь не существует в компании. |
-| 1002 | выбранный пользователь покинул компанию. |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 1000 | incorrect data were sent (for example, one of the parameters was not transmitted). |
+| 1001 | the selected user does not exist in the company. |
+| 1002 | the selected user has left the company. |
 
 ---
 
 ### `POST /group/send`
 
-Метод для отправки сообщения от бота в группу.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/group/send`
+A method for sending a message from a bot to a group.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/group/send`
 
-В теле запроса должны быть указаны следующие параметры:
+The following parameters must be specified in the request body:
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| group_id | string | обязательный | идентификатор группы, в которое бот отправит сообщение. |
-| text | string | обязательный, если не передан параметр file_id | текст сообщения от бота. |
-| file_id | string | обязательный, если не передан параметр text | идентификатор файла для сообщения-файла.<br> О получении file_id подробнее расписано в [данном разделе](#post-filegeturl). |
-| type | string | обязательный | для текстовых сообщений необходимо передавать в этот параметр значение = "text".<br>для сообщений-файлов необходимо передавать в этот параметр значение = "file". |
+| group_id | string | required | ID of the group to which the bot will send the message. |
+| text | string | required if the file_id parameter is not transferred | the text of the bot message. |
+| file_id | string | required if the text parameter is not transferred | the file identifier for a file message.<br> See more about file_id in [this section](#post-filegeturl). |
+| type | string | required | for text messages, the value = "text" must be sent to this parameter.<br>for file messages, the value = "file" must be sent to this parameter. |
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет:<br>
-message_id (string) — ключ сообщения, отправленного ботом в группу.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>The
+result of this method will be:<br>
+message_id (string) — the key of the message sent by the bot to the group.
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {
      "group_id": "GrrzIL4zDC6a4qX031dzJfqTzl8MD6Rqv2wd38yfGLS6n3brLYUVlCEbNg6A0m6W2X2zkPyY8PN3Ijw6e...",
-     "text": "Привет, это сообщение от бота для группы",
+     "text": "Hi, this is a message from a bot to a group",
      "type": "text"
 }
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -511,48 +514,48 @@ message_id (string) — ключ сообщения, отправленного 
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 1000 | переданы некорректные данные (например, не передан один из параметров). |
-| 1003 | бот не состоит в групповом диалоге. |
-| 1004 | такой групповой диалог не существует. |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 1000 | incorrect data were sent (for example, one of the parameters was not transmitted). |
+| 1003 | the bot is not in a group chat. |
+| 1004 | there is no such group chat. |
 
 ---
 
 ### `POST /thread/send`
 
-Метод для отправки сообщения от бота в тред.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/thread/send`
+A method for sending a message from a bot to a thread.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/thread/send`
 
-В теле запроса должны быть указаны следующие параметры:
+The following parameters must be specified in the request body:
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| message_id | string | обязательный | идентификатор сообщения-команды, для которого будет создан тред, если ранее он не был создан, и отправлено сообщение от бота в этот тред. |
-| text | string | обязательный, если не передан параметр file_id | текст сообщения от бота. |
-| file_id | string | обязательный, если не передан параметр text | идентификатор файла для сообщения-файла.<br> О получении file_id подробнее расписано в [данном разделе](#post-filegeturl). |
-| type | string | обязательный | для текстовых сообщений необходимо передавать в этот параметр значение = "text".<br>для сообщений-файлов необходимо передавать в этот параметр значение = "file". |
+| message_id | string | required | the identifier of the command for which the thread will be created, if it has not been created before, and a message from the bot is sent to this thread. |
+| text | string | required if the file_id parameter is not transferred | the text of the bot message. |
+| file_id | string | required if the text parameter is not transferred | the file identifier for a file message.<br> See more about file_id in [this section](#post-filegeturl). |
+| type | string | required | for text messages, the value = "text" must be sent to this parameter.<br>for file messages, the value = "file" must be sent to this parameter. |
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет:<br>
-message_id (string) — ключ сообщения, отправленного ботом в тред.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>
+The result of this method will be:<br>
+message_id (string) — the key of the message sent by the bot to the thread.
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {
      "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFx...",
-     "text": "Привет, это сообщение от бота в тред",
+     "text": "Hi, this is a message from a bot in the thread",
      "type": "text"
 }
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -564,38 +567,38 @@ message_id (string) — ключ сообщения, отправленного 
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 1000 | переданы некорректные данные (например, не передан один из параметров). |
-| 1005 | у бота отсутствует доступ к сообщению (сообщение удалено или диалог очищен). |
-| 1007 | переданный id сообщения не существует. |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 1000 | incorrect data were sent (for example, one of the parameters was not transmitted). |
+| 1005 | the bot does not have access to the message (the message has been deleted or the chat has been cleared). |
+| 1007 | the transmitted message ID does not exist. |
 
 ---
 
 ### `POST /message/addReaction`
 
-Метод для добавления реакции на сообщение от лица бота.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/message/addReaction`
+A method for adding a reaction to a message on behalf of a bot.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/message/addReaction`
 
-Приложение Compass поддерживает список реакций версии 14.0: https://emojipedia.org/emoji-14.0/. <br>
+The Compass app supports a list of reactions of version 14.0: https://emojipedia.org/emoji-14.0/. <br>
 
-В теле запроса должны быть указаны следующие параметры:
+The following parameters must be specified in the request body:
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| message_id | string | обязательный | идентификатор сообщения, на которое устанавливается реакция от лица бота. |
-| reaction | string | обязательный | реакция, которую необходимо установить.<br>Может принимать значение:<br>- короткое описание (short_name). Например, `:blush:`<br>- emoji. Например, 😊 |
+| message_id | string | required | identifier of the message to which the reaction is added on behalf of the bot. |
+| reaction | string | required | the reaction that needs to be added.<br>Can take the value:<br>- short description (short_name). For example, `:blush:`<br>- emoji. For example, 😊 |
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет стандартный ответ "ok" без возвращаемых данных.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>The
+result of this method will be a standard "ok" response with no data returned.
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {
      "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8v...",
@@ -603,7 +606,7 @@ URL для запроса: `https://userbot.getcompass.com/api/v2/message/addRea
 }
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -613,39 +616,39 @@ URL для запроса: `https://userbot.getcompass.com/api/v2/message/addRea
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 1000 | переданы некорректные данные (например, не передан один из параметров). |
-| 1005 | у бота отсутствует доступ к сообщению (сообщение удалено или диалог очищен). |
-| 1006 | переданная реакция отсутствует в приложении. |
-| 1007 | переданный id сообщения не существует. |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 1000 | incorrect data were sent (for example, one of the parameters was not transmitted). |
+| 1005 | the bot does not have access to the message (the message has been deleted or the chat has been cleared). |
+| 1006 | the transmitted reaction is missing in the application. |
+| 1007 | the transmitted message ID does not exist. |
 
 ---
 
 ### `POST /message/removeReaction`
 
-Метод для удаления реакции бота с сообщения.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/message/removeReaction`
+A method for removing the bot's reaction from a message.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/message/removeReaction`
 
-Приложение Compass поддерживает список реакций версии 14.0: https://emojipedia.org/emoji-14.0/. <br>
+The Compass app supports a list of reactions of version 14.0: https://emojipedia.org/emoji-14.0/. <br>
 
-В теле запроса должны быть указаны следующие параметры:
+The following parameters must be specified in the request body:
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| message_id | string | обязательный | идентификатор сообщения, с которого будет удалена реакция бота. |
-| reaction | string | обязательный | реакция, которую необходимо удалить.<br>Может принимать значение:<br>- короткое описание (short_name). Например, `:blush:`<br>- emoji. Например, 😊 |
+| message_id | string | required | identifier of the message from which the bot's reaction will be removed. |
+| reaction | string | required | the reaction that needs to be removed.<br>Can take the value:<br>- short description (short_name). For example, `:blush:`<br>- emoji. For example, 😊 |
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет стандартный ответ "ok" без возвращаемых данных.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>
+The result of this method will be a standard "ok" response with no data returned.
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {
      "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8v...",
@@ -653,7 +656,7 @@ URL для запроса: `https://userbot.getcompass.com/api/v2/message/remove
 }
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -663,43 +666,43 @@ URL для запроса: `https://userbot.getcompass.com/api/v2/message/remove
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 1000 | переданы некорректные данные (например, не передан один из параметров). |
-| 1005 | у бота отсутствует доступ к сообщению (сообщение удалено или диалог очищен). |
-| 1006 | переданная реакция отсутствует в приложении. |
-| 1007 | переданный id сообщения не существует. |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 1000 | incorrect data were sent (for example, one of the parameters was not transmitted). |
+| 1005 | the bot does not have access to the message (the message has been deleted or the chat has been cleared). |
+| 1006 | the transmitted reaction is missing in the application. |
+| 1007 | the transmitted message ID does not exist. |
 
 ---
 
 ### `POST /user/getList`
 
-Метод для получения данных об участниках компании.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/user/getList`
+A method for obtaining data about the company members.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/user/getList`
 
-В теле запроса могут использоваться следующие параметры:
+The following parameters can be used in the request body:
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| count | int | _необязательный_ | количество данных в ответе. По умолчанию = 100.<br>Максимум = 300. |
-| offset | int | _необязательный_ | смещение для пагинации данных. По умолчанию = 0. |
+| count | int | _optional_ | the number of data in the response. Default = 100.<br>Maximum = 300. |
+| offset | int | _optional_ | offset for data pagination. Default = 0. |
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет:<br>
-user_list (array) — список с информацией по участникам компании.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>
+The result of this method will be:<br>
+user_list (array) — a list with information on company members.
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {"count": 300, "offset": 0}
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -707,12 +710,12 @@ user_list (array) — список с информацией по участни
           "user_list": [
                {
                     "user_id": 1,
-                    "user_name": "Иванов Иван",
+                    "user_name": "John Dow",
                     "avatar_file_url": ""
                },
                {
                     "user_id": 2,
-                    "user_name": "Михаилов Михаил",
+                    "user_name": "Mike Johnson",
                     "avatar_file_url": "https://file-1.getcompass.com/files/pivot/dca/e8d/632/fa7/51f/fdcaee3ecea91e6c_w400.jpeg"
                }
           ]
@@ -722,39 +725,39 @@ user_list (array) — список с информацией по участни
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
+| 7 | the request has not been completed yet, please try again after a while. |
 
 ---
 
 ### `POST /group/getList`
 
-Метод для получения информации о группах, в которых состоит бот.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/group/getList`
+A method for obtaining information about the groups in which the bot is a member.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/group/getList`
 
-В теле запроса могут использоваться следующие параметры:
+The following parameters can be used in the request body:
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| count | int | _необязательный_ | количество данных в ответе. По умолчанию = 100.<br>Максимум = 300. |
-| offset | int | _необязательный_ | смещение для пагинации данных. По умолчанию = 0. |
+| count | int | _optional_ | the number of data in the response. Default = 100.<br>Maximum = 300. |
+| offset | int | _optional_ | offset for data pagination. Default = 0. |
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет:<br>
-group_list (array) — список с информацией по групповым диалогам бота.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>
+The result of this method will be:<br>
+group_list (array) — a list with information on the bot's group chats.
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {"count": 50, "offset": 0}
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -762,17 +765,17 @@ group_list (array) — список с информацией по группо�
           "group_list": [
                {
                     "group_id": "kPyY8PN3Ijw6efI20gVJHGiy4xHOociXAmMh1o/i01gLTS8wHHx7JGrrzIL4zDC6a4qX031dzJfqTzl8MD6Rqv2wd38...",
-                    "name": "Библиотека",
+                    "name": "Library",
                     "avatar_file_url": "https://file-1.getcompass.com/files/c1/cba/30i/de0/2ff/uf3/4128e05b1cbd1f79_w80.jpg"
                },
                {
                     "group_id": "GrrzIL4zDC6a4qX031dzJfqTzl8MD6Rqv2wd38yfGLS6n3brLYUVlCEbNg6A0m6W2X2zkPyY8PN3Ijw6efI20gVJHG...",
-                    "name": "Расписание",
+                    "name": "Schedule",
                     "avatar_file_url": "https://file-1.getcompass.com/files/c1/cde/b4s/duo/1fc/97t/4128e05b1cbd1f79_w80.jpg"
                },
                {
                     "group_id": "3brLYUVlCEbNg6A0m6W2X2zkPyY8OociXAmMh1o/i01gLTS8wHHx7JGrrzIL4zDC6a4qX031dzJfqTzl8MD6Rqv2wd...",
-                    "name": "Статистика",
+                    "name": "Statistics",
                     "avatar_file_url": "https://file-1.getcompass.com/files/c1/adf/a1e/pra/4ca/mt5/4128e05b1cbd1f79_w80.jpg"
                }
           ]
@@ -782,56 +785,56 @@ group_list (array) — список с информацией по группо�
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
+| 7 | the request has not been completed yet, please try again after a while. |
 
 ---
 
 ### `POST /command/update`
 
-Метод для обновления списка команд бота.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/command/update`
+Method for updating the list of bot commands.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/command/update`
 
-В теле запроса должны быть указаны следующие параметры:
+The following parameters must be specified in the request body:
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| command_list | array | обязательный | новый список строк-команд для бота (максимум 30 команд для бота). |
+| command_list | array | required | a new list of command lines for the bot (maximum 30 commands for the bot). |
 
-Несколько правил для установки команд:
+A few rules for setting commands:
 
-- длина команды не должна превышать 80 символов;
-- команда может иметь параметры, заключенные в квадратные скобки. В этом случае паттерн для определения команд для бота "проигнорирует" их при
-  обработке, посчитав за переданный параметр.<br>
-  Например, бот в списке команд имеет команду: "отправить сообщение пользователю [ID]". В случае отправки в чат сообщения "/отправить сообщение
-  пользователю [1666]" парсер определит её как команду.
-- команды могут состоять из букв русского и латинского алфавита, цифр и знака подчёркивания. Несколько примеров:
-> /помощь
+- the length of the command must not exceed 80 characters;
+- the command can have parameters enclosed in square brackets. In this case, the pattern for defining commands for the bot will "ignore" them during
+  processing, counting them as the passed parameter.<br>For
+  example, a bot in the list of commands has the command: "send a message to the user [ID]". If the message "/send message to
+  user [1666]" is sent to the chat, the parser will define it as a command.
+- commands can contain Russian and Latin alphabet symbols, numbers and an underscore. A few examples:
+> /help
 >
-> /чей клиент [ID]
+> /client info [ID]
 >
-> /установить_таймер 10мин
+> /set_timer 10min
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет стандартный ответ "ok" без возвращаемых данных.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>
+The result of this method will be a standard "ok" response with no data returned.
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {
      "command_list": [
-          "/помощь",
-          "/отправить сообщение пользователю [ID]"
+          "/help",
+          "/send message to user [ID]"
      ]
 }
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -841,37 +844,37 @@ URL для запроса: `https://userbot.getcompass.com/api/v2/command/update
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 1000 | переданы некорректные данные (превышена длина для команды). |
-| 1008 | превышен лимит списка команд. |
-| 1009 | некорректная команда в списке. |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 1000 | incorrect data was transmitted (the length for the command was exceeded). |
+| 1008 | the limit of the command list has been exceeded. |
+| 1009 | invalid command in the list. |
 
 ---
 
 ### `POST /command/getList`
 
-Метод для получения списка команд бота.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/command/getList`
+Method for getting a list of bot commands.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/command/getList`
 
-В теле запроса **не требуются** передавать параметры.
+Parameters **are not required** to be sent in the request body.
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет:<br>
-command_list (array) — список команд бота.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>
+The result of this method will be:<br>
+command_list (array) — list of bot commands.
 
-<details><summary>Пример результата выполнения запроса</summary>
+<details><summary>Example of request execution result</summary>
 
 ```json5 
 {
      "status": "ok",
      "response": {
           "command_list": [
-               "/помощь",
-               "/отправить сообщение пользователю [ID]"
+               "/help",
+               "/send message to user [ID]"
           ]
      }
 }
@@ -879,37 +882,37 @@ command_list (array) — список команд бота.
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
+| 7 | the request has not been completed yet, please try again after a while. |
 
 ---
 
 ### `POST /webhook/setVersion`
 
-Метод для установки уровня версии webhook бота.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/webhook/setVersion`
+A method for setting the version level of the bot webhook.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/webhook/setVersion`
 
-В теле запроса должны быть указаны следующие параметры:
+The following parameters must be specified in the request body:
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| version | int | обязательный | номер версии для webhook бота. |
+| version | int | required | the version number for the bot webhook. |
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет стандартный ответ "ok" без возвращаемых данных.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>
+The result of this method will be a standard "ok" response with no data returned.
 
-<details><summary>Пример данных для тела запроса и результата выполнения</summary>
+<details><summary>Sample data for the request body and execution result</summary>
 <br>
 
-Данные для тела запроса:
+Data for the request body:
 ```json5 
 {"version": 2}
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -919,27 +922,27 @@ URL для запроса: `https://userbot.getcompass.com/api/v2/webhook/setVer
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 1000 | переданы некорректные данные. |
-| 1011 | передана некорректная версия webhook. |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 1000 | incorrect data was transmitted. |
+| 1011 | an incorrect version of the webhook was transmitted. |
 
 ---
 
 ### `POST /webhook/getVersion`
 
-Метод для получения уровня версии webhook бота.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/webhook/getVersion`
+A method for getting the webhook version level of the bot.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/webhook/getVersion`
 
-В теле запроса **не требуются** передавать параметры.
+Parameters are **not required** to be sent in the request body.
 
-Результатом данного метода будет:<br>
-version (int) — уровень версии webhook бота.
+The result of this method will be:<br>
+version (int) — the version level of the bot webhook.
 
-<details><summary>Пример результата выполнения запроса</summary>
+<details><summary>Example of request execution result</summary>
 
 ```json5 
 {
@@ -956,19 +959,19 @@ version (int) — уровень версии webhook бота.
 
 ### `POST /file/getUrl`
 
-Метод для получения URL ноды, куда загружаются файлы.
+A method for getting the URL node where the files are uploaded.
 
-Предназначен для дальнейшего получения параметра file_id для отправки сообщения-файла.<br>
-URL для запроса: `https://userbot.getcompass.com/api/v2/file/getUrl`
+It is intended for further obtaining the file_id parameter for sending a message file.<br>
+URL for the request: `https://userbot.getcompass.com/api/v2/file/getUrl`
 
-В теле запроса **не требуются** передавать параметры.
+Parameters are **not required** to be sent in the request body.
 
-В ответе метода вернётся `request_id` запроса, который выполняется асинхронно. Результат выполнения можно получить с помощью метода [/request/get](#post-requestget).<br>
-Результатом данного метода будет:<br>
-node_url — URL-адрес сервера, на который возможно загрузить файл;<br>
-file_token — токен для валидации запроса загрузки файла.
+The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>
+The result of this method will be:<br>
+node_url — is the URL of the server to which the file can be uploaded;<br>
+file_token — is a token for validating the file upload request.
 
-<details><summary>Пример результата выполнения запроса</summary>
+<details><summary>Example of request execution result</summary>
 
 ```json5 
 {
@@ -984,34 +987,34 @@ file_token — токен для валидации запроса загруз�
 
 ---
 
-После получения URL сервера, появится возможность загрузить файл составным запросом с помощью [multipart/form-data](https://ru.wikipedia.org/wiki/Multipart/form-data), подписав запрос полученным file-токеном.
+After receiving the server URL, it will be possible to upload the file as a composite request using [multipart/form-data](https://ru.wikipedia.org/wiki/Multipart/form-data), signing the request with the received file token.
 
-В нашем случае с полученными из ответа node_url и токеном для загрузки файла запрос будет выглядеть следующим образом:<br>
-URL для запроса: `https://file1.getcompass.com/api/userbot/files/upload`
+In our case, with the node_url and the file upload token received from the response, the request will look like this:<br>
+URL for the request: `https://file1.getcompass.com/api/userbot/files/upload`
 
-| Название | Тип | Свойство | Описание |
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| token | string | обязательный | токен для валидации загрузки файла. |
-| file | string/binary | обязательный | содержимое файла для загрузки. |
+| token | string | required | a token for validating the file upload. |
+| file | string/binary | required | the contents of the file to upload. |
 
-⚠️ Ограничения для загрузки файла:
+⚠️ File Upload restrictions:
 
-- максимальный размер файла — 256Mb;
-- один токен разрешает загрузку одного файла — второй файл с помощью него не загрузить;
-- для загрузки доступно не больше 50 файлов за 5 минут.
+- the maximum file size is 256MB;
+- one token allows uploading one file — the second file cannot be uploaded using it;
+- no more than 50 files are available for upload in 5 minutes.
 
-После успешной загрузки файла (синхронное выполнение — файл будет загружен сразу) в ответе от метода вернётся:<br>
-file_id (string) — уникальный идентификатор загруженного файла.
+After successful file upload (synchronous execution — the file will be uploaded immediately), the response from the method will return:<br>
+file_id (string) is the unique identifier of the uploaded file.
 
-<details><summary>Пример запроса и результата выполнения запроса</summary>
+<details><summary>Example of the request and the result of the request</summary>
 
-Пример запроса:
+Request example:
 ```json5 
-token: "404952d4ac90ae960de4d2a96fb95d306493e151", // значение полученного file_token
-file: "(binary)"                                   // бинарные данные загружаемого файла
+token: "404952d4ac90ae960de4d2a96fb95d306493e151", // value of the received file_token
+file: "(binary)"                                   // binary data of the uploaded file
 ```
 
-Результат выполнения запроса:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -1023,47 +1026,47 @@ file: "(binary)"                                   // бинарные данн�
 
 </details>
 
-Список возможных ошибок:
+List of possible errors:
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 1000 | переданы некорректные данные. |
-| 1010 | не удалось загрузить файл. |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 1000 | incorrect data was transmitted. |
+| 1010 | the file could not be uploaded. |
 
 ---
 
-### Дополнительное форматирование сообщений
+### Additional message formatting
 
-Боту доступен функционал, позволяющий упомянуть пользователя в отправленном сообщении:
+The bot has a functionality that allows you to mention the user in the sent message:
 
-| ![](screenshots/38933c3fd1be2f8e.png) |
-| --- |
+| ![](screenshots/en/jkgim0rg9byernvph.png) |
+|------------------------------------------|
 
-Для этого текст сообщения должен иметь формат вида:<br>
-`["@"|<числовой идентификатор user_id>|"<имя пользователя>"]`
+To do this, the message text must have the format of:<br>
+`["@"|<numeric identifier user_id>|<username>|]`
 
-На примере выше представим, что у Фёдора Денисова ID пользователя соответствует 345. Для получения сообщения, как в примере, текст отправленного от бота сообщения должен иметь вид:<br>
-`["@"|345|Фёдор Денисов] данные сформированы ✅`
+With the example above, let's take that Fred Smith has a user ID 345. To receive a message, as in the example, the text of the message sent from the bot must have the following form:<br>
+`["@"|345|Fred Smith] data generated ✅`
 
 ---
 
-Также бот обладает теми же способностями форматирования сообщений, что и пользователь Compass.<br>
-Например, менять стиль шрифта или выделить слова определённым цветом:
-- для создания жирного шрифта текста: \*жирный шрифт\*
-- для создания курсива в тексте: \_курсив\_
-- для создания зачёркнутого текста: \~зачёркнутый текст\~
-- текст на чёрном фоне: \``текст на чёрном фоне\``
-- текст, выделенный зелёным: \++зелёное выделение\++
-- текст, выделенный красным: \--красное выделение\--
+The bot also has the same message formatting functions as the Compass user.<br>For
+example, change the font style or highlight words with a certain color:
+- bold text font: *bold font*
+- italics in the text: _cursive_
+- strikethrough text: \~strikethrough text\~
+- text on a black background: \`text on a black background\`
+- text highlighted in green: \++green selection\++
+- text highlighted in red: \--red selection\--
 
-| ![](screenshots/a636e4c3ae275437.png) |
-| --- |
+| ![](screenshots/en/p9w3zf4waugw36o1w.png) |
+|------------------------------------------|
 
 
-## Ошибки при выполнении запроса Compass Userbot API
+## Errors in executing the Compass Userbot API request
 
-В случае если при выполнении запроса произошла ошибка, то возвращается ответ следующего формата:
+If an error occurred during the execution of the request, the response is returned in the following format:
 
 ```json5 
 {
@@ -1074,47 +1077,47 @@ file: "(binary)"                                   // бинарные данн�
      }
 }
 ```
-- status "error" — сообщает о том, что запрос завершился ошибкой;
-- error_code — специальный код ошибки;
-- message — произвольный текст для описания ошибки.
+- status "error" — notifies that the request failed with an error;
+- error_code — is for special error code;
+- message — is for any text to describe the error.
 
 ---
 
-Список **системных ошибок** при попытке выполнить запрос. Возвращаются, когда переданы некорректные данные запроса и в случае, если запрос ещё не выполнен.
+A list of **system errors** when trying to execute a request. They are returned when incorrect request data is transmitted and if the request has not yet been executed.
 
 | error_code | Описание |
 | --- | --- |
-| 1 | отсутствуют обязательные поля для запроса. |
-| 2 | токен запроса не найден. |
-| 3 | бот выключен или удалён — выполнение запроса невозможно. |
-| 4 | некорректная подпись для валидации переданных данных. |
-| 5 | набран лимит ошибок при выполнении запроса. |
-| 6 | неизвестная ошибка при выполнении внутреннего метода для запроса. |
-| 7 | запрос ещё не выполнен, повторите через некоторое время. |
-| 8 | указаны некорректные параметры для запроса. |
-| 9 | указан некорректный метод запроса. |
+| 1 | there are no required fields for the request. |
+| 2 | the request token was not found. |
+| 3 | the bot is disabled or deleted — the request cannot be executed. |
+| 4 | invalid signature for validating the transmitted data. |
+| 5 | the error limit is reached when executing the request. |
+| 6 | unknown error when executing an internal method for the request. |
+| 7 | the request has not been completed yet, please try again after a while. |
+| 8 | incorrect parameters for the request are specified. |
+| 9 | invalid request method is specified. |
 
 ---
 
-Список **ошибок при выполнении** запроса. Такие ошибки можно получить при провальной попытке выполнить запрос в приложении Compass.<br>
-Например, при попытке от лица бота написать уволенному сотруднику.
+List of **errors when executing** the request. Such errors can be received when the attempt to execute a request in the Compass app failed.<br>For
+example, when trying to write to a dismissed employee on behalf of a bot.
 
-| error_code | Значение |
+| error_code | Meaning |
 | --- | --- |
-| 1000 | переданы некорректные данные. |
-| 1001 | выбранный пользователь не существует в компании. |
-| 1002 | выбранный пользователь покинул компанию. |
-| 1003 | бот не состоит в групповом диалоге. |
-| 1004 | такой групповой диалог не существует. |
-| 1005 | у бота отсутствует доступ к сообщению (сообщение удалено или диалог очищен). |
-| 1006 | переданная реакция отсутствует в приложении. |
-| 1007 | переданный id сообщения не существует. |
-| 1008 | превышен лимит списка команд. |
-| 1009 | некорректная команда в списке. |
-| 1010 | не удалось загрузить файл. |
-| 1011 | передана некорректная версия webhook. |
+| 1000 | incorrect data was transmitted. |
+| 1001 | the selected user does not exist in the company. |
+| 1002 | the selected user has left the company. |
+| 1003 | the bot is not in a group chat. |
+| 1004 | there is no such group chat. |
+| 1005 | the bot does not have access to the message (the message has been deleted or the chat has been cleared). |
+| 1006 | the transmitted reaction is missing in the application. |
+| 1007 | the transmitted message ID does not exist. |
+| 1008 | the limit of the command list has been exceeded. |
+| 1009 | invalid command in the list. |
+| 1010 | the file could not be uploaded. |
+| 1011 | an incorrect version of the webhook was transmitted. |
 
-## Библиотека для работы с API чат-ботов приложения Compass
+## Library for Compass Chatbot API
 
-Для вашего удобства нами была создана библиотека для взаимодействия с Compass Userbot API:<br>
-[Библиотека для работы с API чат-ботов](https://github.com/getCompass/php_lib_userbot). <br>
+For your convenience, we have created a library for interacting with the Compass Usbot API:<br>
+[A library for working with the chatbot API](https://github.com/getCompass/php_lib_userbot). <br>
