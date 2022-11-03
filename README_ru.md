@@ -1,3 +1,6 @@
+[![en](https://img.shields.io/badge/lang-en-green.svg)](https://github.com/getCompass/userbot/blob/master/README.md)
+[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/getCompass/userbot/blob/master/README_ru.md)
+
 - [Чат-бот](#Чат-бот)
 - [Создание бота](#Создание-бота)
     - [Учётные данные бота](#Учётные-данные-бота)
