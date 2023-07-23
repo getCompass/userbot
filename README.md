@@ -5,10 +5,10 @@
 - [Creating a bot](#Creating-a-bot)
   - [Bot credentials](#Bot-credentials)
 - [Sending a request to Compass](#Sending-a-request-to-Compass)
-  - [Scheme for obtaining a signature for the request](#Scheme-for-obtaining-a-signature-for-the-request)
   - [Response from Compass after sending a request](#Response-from-Compass-after-sending-a-request)
-  - [Getting the result of the sent request](#Getting-the-result-of-the-sent-request)
 - [Webhook and responding to commands](#Webhook-and-responding-to-commands)
+  - [Response to the user's command](#Response-to-the-users-command)
+  - [Actions available for responding with a webhook](#Actions-available-for-responding-with-a-webhook)
   - [Bot Webhook version](#Bot-Webhook-version)
 - [Compass Userbot API method list](#Compass-Userbot-API-method-list)
 - [Additional message formatting](#Additional-message-formatting)
@@ -22,17 +22,17 @@ What the Compass bot can do:
 - send messages to private and group chats
 - add reactions to messages
 - send files to a chat
-- collect basic information on workspace members (user_id, name, URL of the profile picture)
+- collect basic information on team members (user_id, name, URL of the profile picture)
 
-The actions listed above are implemented through special requests described below in “Compass Userbot API method list”.
+The actions listed above are implemented through special requests described in [Compass Userbot API method list](#Compass-Userbot-API-method-list).
 
-Also, if you enable "Respond to commands" mode, the bot will start responding to commands that you specify and redirect them to your webhook address (more details about it below in “Webhook and responding to commands”).
+Also, if you enable "Respond to commands" mode, the bot will start responding to commands that you specify and redirect them to your webhook address (more details about it below in [Webhook and responding to commands](#Webhook-and-responding-to-commands)).
 
 ## Creating a bot ##
 
-Creating a bot is possible for an administrator with bot managing permission.
+Users with permission to manage bots can create bots.
 
-Only administrators can be given such permission in the workspace member settings. To give the permission go to "Members", select the administrator and then select "Set permissions".
+This permission can be granted to members in the respective settings. To do it, go to "Members", select the user to whom you want to grant permission, and then select "Configure permissions".
 
 | <img src="./screenshots/en/en1.png" alt="" width="550" /> |
 |-----------------------------------------|
@@ -50,7 +50,7 @@ After permissions are set, the sidebar will be updated and managing bot option w
 
 When creating a bot you may set the following parameters:
 - bot name
-- bot role
+- bot purpose
 - webhook, where member commands will be redirected
 
 Webhook is your service's URL. After setting it up, the bot is enabled to respond to the commands by redirecting them to the address you specified.
@@ -59,41 +59,35 @@ Webhook is your service's URL. After setting it up, the bot is enabled to respon
 |-------------------------------------------|
 
 #### Bot credentials
-After creating a bot, you will get a **Token** and a **Signature Key** for the new bot (visible only to administrators with bot managing permission).
+After creating a bot, you will be given a new bot **token** (visible to members with bot management permission) in the "Bot Card" section.
 
 **The bot token** is a unique identifier for each bot.
 
 | <img src="./screenshots/en/en6.png" alt="" width="400" /> |
 |------------------------------------------|
 
-**The signature key** is the key for generating a signature, which is used to sign each sent request. It is required to confirm that the request was sent from your bot.
+⚠️ Please note: **Your bot's token** must not be given to third parties.
+
+If you have already done it, it's better if you change the token through bot settings in Compass:
 
 | <img src="./screenshots/en/en7.png" alt="" width="400" /> |
-|-------------------------------------------|
-
-⚠️ Please note: **Your bot's Token and Signature Key** must not be given to third parties.
-
-If you have already done it, it's better if you change the Signature key in the bot settings.
-
-| <img src="./screenshots/en/en8.png" alt="" width="400" /> |
 |------------------------------------------|
 
-Thus, all bot requests that used the compromised signature key will become invalid for the Compass app.
+Thus, all bot requests that used the compromised token will become invalid for the Compass app.
 
 ## Sending a request to Compass ##
 
 Requests to Compass Userbot API must be performed via HTTPS-request using POST method sent to endpoint: <br>
-`https://userbot .getcompass.com/api/v2/` + (method being executed)<br>
+`https://userbot .getcompass.com/api/v3/` + (implemented method)<br>
 
 All requests must be set with content type **application/json**.<br>
 To upload files **multipart/form-data**.
 
 The body of each request to Compass must contain the following:
-- **json string** of required parameters for the request (empty if no data is required).
+- **json string** of required parameters for the request (empty if no data is required)
 
-Request authorization is done via **headers** using your bot's token and generated signature:<br>
-- header "**Authorization: bearer={bot token}**" - the header contains a token that belongs to your bot (the bot must be enabled for this);
-- header "**Signature: signature={generated signature}**" - a signature is sent in the header to validate the request data (for more information, see below [Scheme for obtaining a signature for the request](#Scheme-for-obtaining-a-signature-for-the-request)).
+Request authorization is done via **headers** using your bot's token:<br>
+- header "**Authorization: bearer={bot token}**" - the header contains a token that belongs to your bot (the bot must be enabled for this)
 
 All methods are case sensitive and must be UTF-8 encoded.
 
@@ -101,50 +95,49 @@ All methods are case sensitive and must be UTF-8 encoded.
 
 Let's look at a request using the example of sending a message to a member.
 
-The  [/user/send](#post-usersend) method is used.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/user/send` <br>
+[/user/send](#post-usersend) method is used.<br>
+URL for the request: `https://userbot.getcompass.com/api/v3/user/send` <br>
 
 Example parameters for a request:
 ```json5
 {
-  "text": "Hello, this is bot", // any text for a new message from the bot 
-  "type": "text", // indicate that the message is a text 
-  "user_id": 12345 // the ID of the user to whom the message is sent
+  "text": "Hello, this is bot", // random text for a new message
+  "type": "text",               // specify that the message is a text message 
+  "user_id": 12345              // identifier of the member you send the message to
 }
 ```
 
 Curl-request structure:<br>
 <pre style="white-space:pre-wrap;">
-curl-X POST -d "<b>{parameters in json format}</b>"
+curl-X POST -d "<b>{json-format parameters}</b>"
 -H "Content-Type: application/json"
 -H "Authorization: bearer=<b>{bot token}</b>"
--H "Signature: signature=<b>{generated signature}</b>"
-https://userbot.getcompass.com/api/v2/user/send
+https://userbot.getcompass.com/api/v3/user/send
 </pre>
 
 
 ---
 
-The bot can send a message to the group it is a member of, a particular member, as well as in the comments to the message.
+The bot can send a message to the group it is a member of, to a particular member, as well as to a comments thread.
 
 When sending a request, you need to specify where the message from the bot will be sent to:
 - if you need to send it to a member, the member ID (the message receiver) is required
-- if you need to send it to a group, you need a unique conversation key
-- if you need to send it in comments, the message key to create a comment thread is required
+- if you need to send it to a group, you need a unique key of the group
+- if you need to send it in comments thread to a message, the message key is required
 
 #### Member ID
 
-The member ID (the "user_id" parameter in requests) is used when sending a message to a specific member. You may get it from a member's profile in Compass (id is available for administrations with bot managing permission only):
+The member ID (the "user_id" parameter in requests) is used when sending a message to a specific member. You may get it from a member's profile in Compass (ID is available for users with bot managing permission only):
 
-| <img src="./screenshots/en/en9.png" alt="" width="400" />  |
+| <img src="./screenshots/en/en8.png" alt="" width="400" />  |
 |------------------------------------------|
 
 #### Chat Key
 
-Unique identifier of the group which the bot is a member of (used as "group_id" in requests).<br>
-It is available to members with the permission to manage bots in the "Bot settings" section in a group chat:
+It is a unique identifier of the group which the bot is a member of (used as "group_id" in requests).<br>
+It is available to members with permission to manage bots in the section "Bot menu" in the group chat:
 
-| <img src="./screenshots/en/en10.png" alt="" width="550" />  |
+| <img src="./screenshots/en/en9.png" alt="" width="550" />  |
 |------------------------------------------|
 
 Example of a chat key:
@@ -153,59 +146,35 @@ Example of a chat key:
 
 #### Message Key
 
-The identifier of a message (used as "message_id" in requests) that the bot is working with. Example of a message key:
+It is the identifier of a message (used as "message_id" in requests) that the bot is working with. Example of a message key:
 > oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8vqbF5vNIi4T/YEKZh4yF4iLXo9J4pW/4UguVkB0XY9/vF5pzUHUL4eVr3ScGWEP3fUEWdNlws+pffgp9oUOl+X0HrFxXxuFVfREy6od/psN+lob
-
----
-
-#### Scheme for obtaining a signature for the request ####
-
-To get a signature, follow these steps:
-
-- for example, let's take a request to send a message from a bot to a specific member (the [/user/send](#post-usersend) method);
-- specifying parameters and values for the request body:
->```json5  
->{
->    "user_id": 12345,
->    "text": "Hello, this is bot",
->    "type": "text"
->}
->```
-- converting the transmitted data to json format;
-- getting a json string of the following type: `{"user_id":12345,"text":"Hello, this is bot","type":"text"}`;
-- combining bot token and json string: `<bot token> + <received json string>`;
-- after that, use the function to generate a hash string based on the encryption key using the HMAC hashing method and the SHA256 encryption algorithm.<br>
->**hash_hmac("sha256", <bot token> + <received json string>, <your bot's signature key>)**
->- hash_hmac is a function for generating a hash string based on your bot's signature key;
->- sha256 — the encryption algorithm used;
-
-Received string is a signature which is sent in a header of the request:<br>
-**Signature: signature={generated signature}**:
-
-⚠️ Pay attention to the following:
-- the received signature is **relevant only** for the current token, signature key, and request parameters. If one of them changes, it will be necessary
-  to generate the signature again according to the same scheme.
 
 ---
 
 #### Response from Compass after sending a request ####
 
+All requests to Compass are executed synchronously and return the result of their execution.<br>
 The response is a json object that contains the fields:
-- **status** (string) — shows the status of the request.<br>
-  Can take a value of "ok" (in case of success) or "error" (in case of an error);
-- **response** (json) is a json object of arbitrary data.
+- **status** (string) — shows the status of the request<br>
+  Can take a value of "ok" (in case of success) or "error" (in case of an error)
+- **response** (json) is a json object of arbitrary data
 
 In case of success, the response field may have the data of the executed request, or an empty value.
 
-**Example of a response with returned data:**
-```json5 
-{
-    "status": "ok",
-    "response": {
-        "request_id": "fb32d289-2ec2-46b7-8116-ad3c4adeaa61"
-    }
-}
-```
+Let's look at the scheme of getting the result by the example of sending a message from a bot:
+- performing the [/user/send](#post-usersend) request by sending the text: Hello, this is bot 😊
+- If the message is successfully sent, the method will return the result of executing the request. It is the message_id of the message sent by the bot in the following example:
+>```json5
+>{
+>     "status": "ok",
+>     "response": {
+>          "message_id": "eNb2VLAPCGFfK1gHzNkH78XNDsPr9N/dDI7f/yaeTof0zjXwv/G000SZFNwqBOx2ACjqSwFjB1Lhgtqn..."
+>     }
+>}
+>```
+
+| <img src="./screenshots/en/en10.png" alt="" width="550" /> |
+| --- |
 
 **Example of an empty response:**
 ```json5 
@@ -215,10 +184,11 @@ In case of success, the response field may have the data of the executed request
 }
 ```
 
-If an error occurs the field **status** acquires the "error" value.<br>
-In this case **response** field will contain the following fields:
-- **error_code** (int) — error code. For more details, see below ["Errors when executing the Compass Userbot API request"](#Errors-when-executing-the-Compass-Userbot-API-request);
-- **message** (string) — arbitrary error text.
+If an error occurs the field **status** acquires the "error" value.
+
+In this case, the **response** field will contain the fields:
+- **error_code** (int) — error code. For more details, see the section [Errors in executing the Compass Userbot API request](#Errors-when-executing-the-Compass-Userbot-API-request)
+- **message** (string) — arbitrary error text
 
 **Example of an error response:**
 ```json5 
@@ -231,62 +201,16 @@ In this case **response** field will contain the following fields:
 }
 ```
 
-#### Getting the result of the sent request ####
+## Webhook and responding to commands
 
-All the requests to Compass except for [/request/get](#post-requestget) method and file uploading are performed asynchronously.<br>
-After executing the request it is necessary to request it using the identifier - `request_id`. 
-This is the unique identifier of the performed request in Compass.
-
-After successfully sending a request to Compass, you can request the result with a 0.5 seconds interval using the [/request/get](#post-requestget) method.<br>
-
-Let's look at the scheme of getting the result by the example of sending a message from a bot:
-- performing the [/user/send](#post-usersend) method, request by sending the text: Hello, this is bot :blush:
-- the request response will contain its `request_id`:
-```json5 
-{
-    "status": "ok",
-    "response": {
-        "request_id": "fb32d289-2ec2-46b7-8116-ad3c4adeaa61"
-    }
-}
-```
-- at this moment, the request is taken for processing to send a message to the member on behalf of the bot;
-- calling the [/request/get](#post-requestget) method with sending `request_id` will return the state of the specified request:
-> If the request is still in progress:
->
->```json5 
->{
->    "status": "error",
->    "response": {
->        "error_code": 7,
->        "message": "the request has not yet been completed, please try again in a while"
->    }
->}
->```
-- such a response means that the request has not been executed yet — it is enough to wait a little (we recommend an interval of no more than 0.5 seconds), then re-request the result using [/request/get](#post-requestget);
-- if the message is successfully sent, the method will return the result of executing the request — in this example, it is the `message_id` of the message sent by the bot:
->```json5
->{
->     "status": "ok",
->     "response": {
->          "message_id": "eNb2VLAPCGFfK1gHzNkH78XNDsPr9N/dDI7f/yaeTof0zjXwv/G000SZFNwqBOx2ACjqSwFjB1Lhgtqn..."
->     }
->}
->```
+The bot can respond to special command messages. To add commands, use [/command/update](#post-commandupdate) method:
 
 | <img src="./screenshots/en/en11.png" alt="" width="550" />  |
 |------------------------------------------|
 
-## Webhook and responding to commands
+The preset commands will be visible to each team member in the "Bot Card" section:
 
-Bot may respond to special commands added by the workspace administrator with the bot managing permission using the method [/command/update](#post-commandupdate):
-
-| <img src="./screenshots/en/en12.png" alt="" width="550" />  |
-|------------------------------------------|
-
-The preset commands will be visible to each workspace member in the "Bot Card" section:
-
-| <img src="./screenshots/en/en13.png" alt="" width="400" />  |
+| <img src="./screenshots/en/en12.png" alt="" width="400" />  |
 |------------------------------------------|
 
 When a member sends a command to a bot with "Respond to commands" mode enabled, and a webhook is installed, the data of the following form is sent to the specified address:
@@ -307,7 +231,7 @@ When a member sends a command to a bot with "Respond to commands" mode enabled, 
 - message_id is for the unique identifier of the command
 - text is for the text of the command sent to the bot
 - type indicates where the command came from (single — private chat with the bot; group — group chat)
-- user_id — identifier of the member who sent the command
+- user_id is for the identifier of the member who sent the command
 
 > If the command was sent in a private chat with the bot
 >
@@ -321,105 +245,210 @@ When a member sends a command to a bot with "Respond to commands" mode enabled, 
 >}
 >```
 
-⚠️ Please note: only those messages are sent to your service, the text of which matches the template of commands prescribed in your workspace bot settings. **Other messages from the chat are not sent to the webhook**.
+⚠️ Please note: only those messages are sent to your service, the text of which matches the template of commands prescribed in your team bot settings. **Other messages from the chat are not sent to the webhook**.
 
 The request will be signed with a header using the token of the bot to which the sent command belongs:<br>
 >header "**Authorization: bearer={bot token}**".<br>
 
-The request will also contain a header with the generated signature for the data being sent (created according to the standard [Scheme for obtaining a signature for the request](#receipt-scheme)):<br>
->header "**Signature: signature={generated signature}**".<br>
-
 After receiving the data on your webhook, you can:
-- check by token that the request came to your bot
-- generate a signature, then compare it with the hash string in the "Signature" header. If the strings match, you can thereby make sure that the data was sent from Compass, and not by third parties.
+- check by the token in the transmitted header that the request came for your bot
+- synchronously respond to the user's command by sending a message to the chat or by adding a reaction to the command message
 
-#### Bot Webhook version
+#### Response to the user's command
 
-Each Compass bot has a webhook version that allows for more flexible interaction with the Userbot API when API changes.<br>
+After receiving a message to your webhook, you can respond to the user's command by sending data in the request response without having to call the method of Compass Userbot API.<br>
+The response to the request from the bot must be generated as a **json string** with the required parameters.
 
-Let's look at the example:<br>
-In the new version of the Userbot API, the format of data sent to your webhook address has changed, for example, a new chat type has appeared:
->type: "group/single/ **(new) channel**"
+Let's look at the example of sending a response to a user's command:
+- the user sends a command for your bot to the chat
+- a request with the command data is sent to your webhook
+- after receiving the data, you have to form the required parameters and return them in the **request response**
+- having successfully completed the webhook request, the bot receives your response and responds to the user's command
 
-In this case previously used bot will have a webhook version **not affected** by changes and your webhook address will get known format data.<br>
-After you take new changes into consideration you may change the webhook version to the relevant one using the [/webhook/setVersion](#post-webhooksetversion) method.
+> Example of parameters for responding to a user's command to be sent as a message in a chat:
+>
+>```json5 
+>{
+>	"answer": {
+>		"action": "message_send",
+>		"post": {
+>			"text": "Hello! This is a message from the bot",
+>			"type": "text"
+>		}
+>	}
+>}
+>```
+- answer is a field that contains a json object of the transmitted parameters
+- action is the action you want to perform in the response
+- post is an object with post parameters
 
-## Compass Userbot API method list
+If you do not need to respond to the sent command, it is also not necessary to transmit data in the request response.
 
-| Method | What is it used for                                |
-| :--- |:---------------------------------------------------|
-| [/request/get](#post-requestget) | getting the result of executing the request         |
-| [/user/send](#post-usersend) | sending a message from the bot to a specific member |
-| [/group/send](#post-groupsend) | sending a message from the bot to a group chat     |
-| [/thread/send](#post-threadsend) | sending a message from the bot to a comment thread         |
-| [/message/addReaction](#post-messageaddreaction) | adding a reaction to a message on behalf of the bot |
-| [/message/removeReaction](#post-messageremovereaction) | removing the bot's reaction from the message                  |
-| [/user/getList](#post-usergetlist) | getting data about the workspace members           |
-| [/group/getList](#post-groupgetlist) | getting the data of the groups that the bot is a member of      |
-| [/command/update](#post-commandupdate) | updating the list of bot commands                       |
-| [/command/getList](#post-commandgetlist) | getting a list of bot commands                       |
-| [/webhook/setVersion](#post-webhooksetversion) | setting up the version for the bot webhook |
-| [/webhook/getVersion](#post-webhookgetversion) | getting the current version of the bot webhook              |
-| [/file/getUrl](#post-filegeturl) | getting the URL for uploading files                  |
+#### Actions available for responding with a webhook
 
-## Description of methods
+| Action | What is it used for |
+| :--- | :--- |
+| [message_send](#message_send) | an action for sending a message from the bot at the user's command. |
+| [thread_send](#thread_send) | an action for sending a message from the bot to the comment thread at the user's command. |
+| [message_addreaction](#message_addreaction) | an action for adding a reaction at the user's command. |
 
-### `POST /request/get`
+---
 
-The method for getting the result of the sent request.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/request/get` <br>
+#### `message_send`
 
-In case of success the result of the request will be returned.<br>
-The following parameters must be specified in the request body:
+An action for sending a message from the bot to a chat at the user's command.
 
-| Name | Type | Property | Description | 
+The following parameters must be specified:
+
+| Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| request_id | string | required | ID of the request sent to the Compass app. |
+| action | string | required | The action performed in response to the command. |
+| post | object | required | An object with post parameters. |
+| post.text | string | required if the file_id parameter is not transmitted | Bot message text. |
+| post.file_id | string | required if the text parameter is not transmitted | The file identifier for the message file.<br> More information about getting file_id can be found in [&nbsp;this section](#post-filegeturl). |
+| post.type | string | required | = "text" is required in this parameter for text messages.<br>= "file" is required in this parameter for file messages. |
 
-<details><summary>Data example for the request body and the executing result</summary>
+<details><summary>Example of parameters</summary>
 <br>
 
-Data for the request body:
-```json5 
-{"request_id": "2f991a80-750c-4abc-b7e1-1f16456de59d"}
-```
-
-The result of executing the request (for example, information about the workspace participants was requested)
+To send a text message:
 ```json5 
 {
-     "status": "ok",
-     "response": {
-          "user_list": [
-               {
-                    "user_id": 1,
-                    "user_name": "John Dow",
-                    "avatar_file_url": ""
-               },
-               {
-                    "user_id": 2,
-                    "user_name": "Mike Johnson",
-                    "avatar_file_url": "https://file-1.getcompass.com/files/pivot/dca/e8d/632/fa7/51f/fdcaee3ecea91e6c_w400.jpeg"
-               }
-          ]
-     }
+	"answer": {
+		"action": "message_send",
+		"post": {
+			"text": "Hello! This is a message from the bot",
+			"type": "text"
+		}
+	}
+}
+```
+
+To send a file:
+```json5 
+{
+	"answer": {
+		"action": "message_send",
+		"post": {
+  		    "file_id": "+OVV/dHD03Pb/qRQz9W/FhgupqO6UY0lmbwnG5tz9mHW51N8gA10VvotOzq01GuWq/c5LGZSldSCz4aki...",
+		    "type": "file"
+		}
+	}
 }
 ```
 
 </details>
 
-List of possible errors:
+---
 
-| error_code | Meaning |
-| --- | --- |
-| 7 | The request has not been completed yet, please try again after a while. |
-| 1000 | Incorrect data was transferred (for example, the request_id parameter, which is not found in the database). |
+#### `thread_send`
+
+An action for sending a message from the bot to a comment thread at the user's command.
+
+The following parameters must be specified:
+
+| Name | Type | Property | Description |
+| -------- | --- | --- | -------- |
+| action | string | required | The action performed in response to the command. |
+| post | object | required | An object with post parameters. |
+| post.text | string | required if the file_id parameter is not transmitted | Bot message text. |
+| post.file_id | string | required if the text parameter is not transmitted | The file identifier for the message file.<br>More information about getting file_id can be found in [&nbsp;this section](#post-filegeturl). |
+| post.type | string | required | = "text" is required in this parameter for text messages.<br>= "file" is required in this parameter for file messages. |
+
+<details><summary>Example of parameters</summary>
+<br>
+
+To send a text message:
+```json5 
+{
+	"answer": {
+		"action": "thread_send",
+		"post": {
+		    "text": "Hello! This is a message from the bot to the comment thread",
+		    "type": "text"
+		}
+	}
+}
+```
+
+To send a file:
+```json5 
+{
+	"answer": {
+		"action": "thread_send",
+		"post": {
+  		    "file_id": "+OVV/dHD03Pb/qRQz9W/FhgupqO6UY0lmbwnG5tz9mHW51N8gA10VvotOzq01GuWq/c5LGZSldSCz4aki...",
+		    "type": "file"
+		}
+	}
+}
+```
+
+</details>
 
 ---
 
+#### `message_addreaction`
+
+An action for adding a reaction at the user's command.
+
+The following parameters must be specified:
+
+| Name | Type | Property | Description |
+| -------- | --- | --- | -------- |
+| action | string | required | The action performed in response to the command. |
+| post | object | required | An object with post parameters. |
+| post.reaction | string | required | A reaction to be added.<br>Can take the value:<br>- short description (short_name). For example, `:blush:`<br>- emoji. For example, 😊 |
+
+The Compass app supports a list of reactions of version 15.0: https://emojipedia.org/emoji-15.0/. <br>
+
+<details><summary>Example of parameters</summary>
+
+```json5 
+{
+	"answer": {
+		"action": "message_addreaction",
+		"post": {
+  		    "reaction": ":black_cat:"
+		}
+	}
+}
+```
+
+</details>
+
+#### Bot Webhook version
+
+Each Compass bot has a webhook version that allows for more flexible interaction with the Userbot API when API changes.
+
+When new changes appear, the bot you used before the changes will have the version that the new changes will not affect. And the data of the format known to you will be sent to the address of your webhook.<br>
+
+To get new changes, you need to use the [/webhook/setVersion](#post-webhooksetversion) method to switch the webhook version to the current one.<br>
+Learn more about migration changes and webhook version: [Migration guide](https://github.com/getCompass/userbot/blob/master/migration_guide.md)
+
+## Compass Userbot API method list
+
+| Method | What is it used for                                |
+| :--- |:---------------------------------------------------|
+| [/user/send](#post-usersend) | sending a message from the bot to a specific member |
+| [/group/send](#post-groupsend) | sending a message from the bot to a group chat |
+| [/thread/send](#post-threadsend) | sending a message from the bot to a comment thread |
+| [/message/addReaction](#post-messageaddreaction) | adding a reaction to a message on behalf of the bot |
+| [/message/removeReaction](#post-messageremovereaction) | removing the bot's reaction from the message |
+| [/user/getList](#post-usergetlist) | get data about the team members |
+| [/group/getList](#post-groupgetlist) | get the data of the groups that the bot is a member of |
+| [/command/update](#post-commandupdate) | update the list of bot commands |
+| [/command/getList](#post-commandgetlist) | get a list of bot commands |
+| [/webhook/setVersion](#post-webhooksetversion) | set up the version for the bot webhook |
+| [/webhook/getVersion](#post-webhookgetversion) | get the current version of the bot webhook |
+| [/file/getUrl](#post-filegeturl) | get the URL for uploading files |
+
+## Description of methods
+
 ### `POST /user/send`
 
-A method for sending a message from a bot to a user.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/user/send`
+A method for sending bot's message to a user.<br>
+URL for the request: `https://userbot.getcompass.com/api/v3/user/send`
 
 The following parameters must be specified in the request body:
 
@@ -428,12 +457,10 @@ The following parameters must be specified in the request body:
 | user_id | int | required | The ID of the member who the bot will send a message to in a private chat.|
 | text | string | required if the file_id parameter is not transferred | Bot message text. |
 | file_id | string | required if the text parameter is not transferred | The file identifier for a file message.<br> See more about file_id in ["POST /file/getUrl"](#post-filegeturl) below. |
-| type | string | required | For text messages parameter = "text" is required. For files parameter = "file" is required. |
+| type | string | required | = "text" is required in this parameter for text messages.<br>= "file" is required in this parameter for file messages. |
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.
-
-The result of the method is:<br>
-message_id (string) — message key sent by the bot.
+The result of executing this method will be:<br>
+message_id (string) is for the message key sent by the bot.
 
 <details><summary>Data example for the request body and the executing result</summary>
 <br>
@@ -441,7 +468,7 @@ message_id (string) — message key sent by the bot.
 Data for the request body:
 ```json5 
 {
-     "text": "Hi, this is a message from a bot",
+     "text": "Hello! This is a message from the bot",
      "type": "text",
      "user_id": 12345
 }
@@ -463,17 +490,16 @@ List of possible errors:
 
 | error_code | Meaning |
 | --- | --- |
-| 7 | The request has not been completed yet, please try again after a while. |
 | 1000 | Incorrect data were sent (for example, one of the parameters was not transmitted). |
-| 1001 | Selected member is not found in the workspace. |
-| 1002 | Selected member has left the workspace. |
+| 1001 | Selected member is not found in the team. |
+| 1002 | Selected member has left the team. |
 
 ---
 
 ### `POST /group/send`
 
-The method for sending a bot's message in a group chat.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/group/send`
+The method for sending a message from the bot to a group chat.<br>
+URL for the request: `https://userbot.getcompass.com/api/v3/group/send`
 
 The following parameters must be specified in the request body:
 
@@ -481,13 +507,11 @@ The following parameters must be specified in the request body:
 | -------- | --- | --- | -------- |
 | group_id | string | required | ID of the group where the bot will send the message. |
 | text | string | required if the file_id parameter is not transferred | Bot message text. |
-| file_id | string | required if the text parameter is not transferred | the file identifier for a file message.<br> See more about file_id in [“POST /file/getUrl”](#post-filegeturl) below. |
-| type | string | required | For text messages parameter = "text" is required. For files parameter = "file" is required. |
+| file_id | string | required if the text parameter is not transferred | the file identifier for a file message.<br>Learn more about file_id in [“POST /file/getUrl”](#post-filegeturl) below. |
+| type | string | required | = "text" is required in this parameter for text messages.<br>= "file" is required in this parameter for file messages. |
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.
-
-The result of the execution can be received by using the method<br>
-message_id (string) — message key sent by the bot in a group chat.
+The result of executing this method will be:<br>
+message_id (string) is for the message key sent by the bot to a group chat.
 
 <details><summary>Data example for the request body and the executing result</summary>
 <br>
@@ -496,12 +520,12 @@ Data for the request body:
 ```json5 
 {
      "group_id": "GrrzIL4zDC6a4qX031dzJfqTzl8MD6Rqv2wd38yfGLS6n3brLYUVlCEbNg6A0m6W2X2zkPyY8PN3Ijw6e...",
-     "text": "Hi, this is a message from a bot to a group",
+     "text": "Hello! This is a message from the bot",
      "type": "text"
 }
 ```
 
-The result of completing the request:
+Request execution result:
 ```json5 
 {
      "status": "ok",
@@ -517,7 +541,6 @@ List of possible errors:
 
 | error_code | Meaning |
 | --- | --- |
-| 7 | The request has not been completed yet, please try again after a while. |
 | 1000 | Incorrect data were sent (for example, one of the parameters was not transmitted). |
 | 1003 | The bot is not in a group chat. |
 | 1004 | The group is not found. |
@@ -526,8 +549,8 @@ List of possible errors:
 
 ### `POST /thread/send`
 
-The method for sending a bot's message in a comment thread.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/thread/send`
+The method for sending message from the bot to a comment thread.<br>
+URL for the request: `https://userbot.getcompass.com/api/v3/thread/send`
 
 The following parameters must be specified in the request body:
 
@@ -535,22 +558,20 @@ The following parameters must be specified in the request body:
 | -------- | --- | --- | -------- |
 | message_id | string | required | The identifier of the command for which the comment thread will be created, if it has not been created before, and a message from the bot is sent to this thread. |
 | text | string | required if the file_id parameter is not transferred | Bot message text. |
-| file_id | string | required if the text parameter is not transferred | the file identifier for a file message.<br> See more about file_id in [“POST /file/getUrl”](#post-filegeturl) below. |
-| type | string | required | For text messages parameter = "text" is required. For files parameter = "file" is required.|
+| file_id | string | required if the text parameter is not transferred | the file identifier for a file message.<br>Lear more about file_id in [“POST /file/getUrl”](#post-filegeturl) below. |
+| type | string | required | = "text" is required in this parameter for text messages.<br>= "file" is required in this parameter for file messages. |
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.<br>
+The result of executing this method will be:<br>
+message_id (string) is for the message key sent by the bot to the comment thread.
 
-The result of the method is:<br>
-message_id (string) — message key sent by the bot in the comment thread.
-
-<details><summary>Sample data for the request body and execution result</summary>
+<details><summary>Data example for the request body and the execution result</summary>
 <br>
 
 Data for the request body:
 ```json5 
 {
      "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFx...",
-     "text": "Hi, this is a message from a bot in the thread",
+     "text": "Hello! This is a message from the bot to the comment thread",
      "type": "text"
 }
 ```
@@ -571,7 +592,6 @@ List of possible errors:
 
 | error_code | Meaning |
 | --- | --- |
-| 7 | The request has not been completed yet, please try again after a while. |
 | 1000 | Incorrect data were sent (for example, one of the parameters was not transmitted). |
 | 1005 | The bot does not have access to the message (the message has been deleted or the chat has been cleared). |
 | 1007 | The transmitted message ID is not found. |
@@ -581,7 +601,7 @@ List of possible errors:
 ### `POST /message/addReaction`
 
 The method for adding bot's reactions to the message.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/message/addReaction`
+URL for the request: `https://userbot.getcompass.com/api/v3/message/addReaction`
 
 The Compass app supports a list of reactions of version 15.0: https://emojipedia.org/emoji-15.0/. <br>
 
@@ -590,10 +610,9 @@ The following parameters must be specified in the request body:
 | Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
 | message_id | string | required | Identifier of the message which bot's reaction is added to. |
-| reaction | string | required | The necessary reaction. <br>May take the value:<br>- short_name. For example, `:blush:`<br>- emoji. For example, 😊 |
+| reaction | string | required | A reaction to be added.<br>May take the value:<br>- short_name. For example, `:blush:`<br>- emoji. For example, 😊 |
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The execution result can be obtained using the [/request/get](#post-requestget) method.<br>The
-The result will be a standard "ok" response with no data inside.
+The result will be a default "ok" response with no data inside.
 
 <details><summary>Data example for the request body and the executing result</summary>
 <br>
@@ -620,7 +639,6 @@ List of possible errors:
 
 | error_code | Meaning |
 | --- | --- |
-| 7 | The request has not been completed yet, please try again after a while. |
 | 1000 | Incorrect data were sent (for example, one of the parameters was not transmitted). |
 | 1005 | The bot does not have access to the message (the message has been deleted or the chat has been cleared). |
 | 1006 | The transmitted reaction is not found in the application. |
@@ -630,8 +648,8 @@ List of possible errors:
 
 ### `POST /message/removeReaction`
 
-The method for removing reactions from messages.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/message/removeReaction`
+The method for removing bot's reactions from messages.<br>
+URL for the request: `https://userbot.getcompass.com/api/v3/message/removeReaction`
 
 The Compass app supports a list of reactions of version 15.0: https://emojipedia.org/emoji-15.0/. <br>
 
@@ -640,10 +658,9 @@ The following parameters must be specified in the request body:
 | Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
 | message_id | string | required | Identifier of the message which the bot's reaction will be removed from. |
-| reaction | string | required | The reaction needs to be removed.<br>May take the value:<br>- short_name. For example, `:blush:`<br>- emoji. For example, 😊  |
+| reaction | string | required | The reaction to be removed.<br>May take the value:<br>- short_name. For example, `:blush:`<br>- emoji. For example, 😊  |
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.<br>
-The result will be a standard "ok" response with no data inside.
+The result will be a default "ok" response with no data inside.
 
 <details><summary>Data example for the request body and the executing result</summary>
 <br>
@@ -670,7 +687,6 @@ List of possible errors:
 
 | error_code | Meaning |
 | --- | --- |
-| 7 | The request has not been completed yet, please try again after a while.|
 | 1000 | Incorrect data were sent (for example, one of the parameters was not transmitted). |
 | 1005 | The bot does not have access to the message (the message has been deleted or the chat has been cleared). |
 | 1006 | The transmitted reaction is not found in the application. |
@@ -680,8 +696,8 @@ List of possible errors:
 
 ### `POST /user/getList`
 
-The method for getting the data about the workspace members.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/user/getList`
+The method for getting data about the team members of.<br>
+URL for the request: `https://userbot.getcompass.com/api/v3/user/getList`
 
 The following parameters can be used in the request body:
 
@@ -690,9 +706,8 @@ The following parameters can be used in the request body:
 | count | int | _optional_ | The number of data in the response. Default = 100. Maximum = 300. |
 | offset | int | _optional_ | Offset for data pagination. Default = 0. |
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.<br>
 The result of the method is:<br>
-user_list (array) — list with the data about workspace members.
+user_list (array) is a list with the data about team members.
 
 <details><summary>Data example for the request body and the executing result</summary>
 <br>
@@ -725,18 +740,12 @@ Request execution result:
 
 </details>
 
-List of possible errors:
-
-| error_code | Meaning |
-| --- | --- |
-| 7 | Data example for the request body and the executing result |
-
 ---
 
 ### `POST /group/getList`
 
-The method for getting the data about the groups the bot is a member of.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/group/getList`
+The method for getting data about the groups the bot is member of.<br>
+URL for the request: `https://userbot.getcompass.com/api/v3/group/getList`
 
 The following parameters can be used in the request body:
 
@@ -745,9 +754,8 @@ The following parameters can be used in the request body:
 | count | int | _optional_ | The number of data in the response. Default = 100. Maximum = 300. |
 | offset | int | _optional_ | Offset for data pagination. Default = 0. |
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.<br>
 The result of the method is:<br>
-group_list (array) — list with the data about the bot's group chats.
+group_list (array) is a list with the data about the bot's group chats.
 
 <details><summary>Data example for the request body and the executing result</summary>
 <br>
@@ -785,18 +793,12 @@ Request execution result:
 
 </details>
 
-List of possible errors:
-
-| error_code | Meaning |
-| --- | --- |
-| 7 | The request has not been completed yet, please try again after a while. |
-
 ---
 
 ### `POST /command/update`
 
-The method for updating a bot command list.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/command/update`
+The method for updating bot command list.<br>
+URL for the request: `https://userbot.getcompass.com/api/v3/command/update`
 
 The following parameters must be specified in the request body:
 
@@ -808,16 +810,15 @@ A few rules for setting commands:
 
 - The length of the command must not exceed 80 characters.
 - The command can have parameters enclosed in square brackets. In this case, the pattern for defining commands for the bot will "ignore" them during processing, treating them as a sent parameter. <br> For example, a bot command list includes the command: "send the message to the member [ID]". If the message "/send message to member [1666]" is sent to the chat, the parser will define it as a command. 
-- Commands can contain Cyrillic and Latin alphabet symbols, numbers and an underscore. For example, /help, /client info [ID], /set_timer 10 min.
+- Commands can contain Cyrillic and Latin alphabet symbols, numbers and an underscore. For example,
 
 > /help
 >
-> /client info [ID]
+> /whose client [ID]
 >
 > /set_timer 10min
 
-The method's response will return the request_id of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.<br>
-The result will be a standard "ok" response with no data inside.
+The result will be a default "ok" response with no data inside.
 
 <details><summary>Data example for the request body and the executing result</summary>
 <br>
@@ -846,7 +847,6 @@ List of possible errors:
 
 | error_code | Meaning |
 | --- | --- |
-| 7 | The request has not been completed yet, please try again after a while. |
 | 1000 | Incorrect data was transmitted (the length for the command was exceeded). |
 | 1008 | The limit of the command list has been exceeded. |
 | 1009 | Invalid command in the list. |
@@ -855,16 +855,15 @@ List of possible errors:
 
 ### `POST /command/getList`
 
-The method for getting a bot command list.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/command/getList`
+The method for getting bot command list.<br>
+URL for the request: `https://userbot.getcompass.com/api/v3/command/getList`
 
 Parameters are **not required** to be sent in the request body.
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.<br>
 The result of the method is:<br>
 command_list (array) — bot command list.
 
-<details><summary>The example of the request</summary>
+<details><summary>The example of the request execution result</summary>
 
 ```json5 
 {
@@ -880,18 +879,12 @@ command_list (array) — bot command list.
 
 </details>
 
-List of possible errors:
-
-| error_code | Meaning |
-| --- | --- |
-| 7 | The request has not been completed yet, please try again after a while.|
-
 ---
 
 ### `POST /webhook/setVersion`
 
 The method for setting the level of the bot webhook version.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/webhook/setVersion`
+URL for the request: `https://userbot.getcompass.com/api/v3/webhook/setVersion`
 
 The following parameters must be specified in the request body:
 
@@ -899,15 +892,14 @@ The following parameters must be specified in the request body:
 | -------- | --- | --- | -------- |
 | version | int | required | The version number for the bot webhook. |
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.<br>
-The result will be a standard "ok" response with no data inside.
+The result will be a default "ok" response with no data inside.
 
-<details><summary>Data example for the request body and the executing result</summary>
+<details><summary>Data example for the request body and the execution result</summary>
 <br>
 
 Data for the request body:
 ```json5 
-{"version": 2}
+{"version": 3}
 ```
 
 Request execution result:
@@ -924,7 +916,6 @@ List of possible errors:
 
 | error_code | Meaning |
 | --- | --- |
-| 7 | The request has not been completed yet, please try again after a while. |
 | 1000 | Incorrect data was transmitted. |
 | 1011 | An incorrect version of the webhook was transmitted. |
 
@@ -933,14 +924,14 @@ List of possible errors:
 ### `POST /webhook/getVersion`
 
 The method for getting the level of the bot webhook version.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/webhook/getVersion`
+URL for the request: `https://userbot.getcompass.com/api/v3/webhook/getVersion`
 
 Parameters are **not required** to be sent in the request body.
 
 The result of the method is:<br>
 version (int) — bot webhook version level.
 
-<details><summary>The example of the request</summary>
+<details><summary>The example of the request execution result</summary>
 
 ```json5 
 {
@@ -960,14 +951,13 @@ version (int) — bot webhook version level.
 The method for getting the URL node where the files are uploaded.
 
 It is used for further getting of file_id parameter for sending files.<br>
-URL for the request: `https://userbot.getcompass.com/api/v2/file/getUrl`
+URL for the request: `https://userbot.getcompass.com/api/v3/file/getUrl`
 
 Parameters are **not required** to be sent in the request body.
 
-The method's response will return the `request_id` of the request that is executed asynchronously. The result of the execution can be received by using the [/request/get](#post-requestget) method.<br>
-The result of the method is:<br>
-node_url — server URL- address, where file upload is available;<br>
-file_token — a token for validating the file upload.
+The result of executing this method will be:<br>
+node_url (string) is server URL- address, where file upload is available;<br>
+file_token (string) is a token for validating the file upload.
 
 <details><summary>The example of the request</summary>
 
@@ -999,13 +989,13 @@ URL for the request: `https://file1.getcompass.com/api/userbot/files/upload`
 
 - 256 MB is the maximum file size available
 - one token allows uploading only one file and it's not possible to use it for uploading another one
-- no more than 50 files are available for upload in 5 minutes
+- max. 50 files are available for upload within 5 minutes
 
 After a successful file loading (synchronous execution - the file will be loaded immediately) the response from the method will return:
 
-file_id (string) — unique identifier of the loaded file.
+file_id (string) is for the unique identifier of the loaded file.
 
-<details><summary>The example of the result of completing the request</summary>
+<details><summary>The example of a request and of the request execution result</summary>
 
 Request example:
 ```json5 
@@ -1029,7 +1019,6 @@ List of possible errors:
 
 | error_code | Meaning |
 | --- | --- |
-| 7 | The request has not been completed yet, please try again after a while. |
 | 1000 | Incorrect data was transmitted. |
 | 1010 | Failed to load the file. |
 
@@ -1039,28 +1028,28 @@ List of possible errors:
 
 The function of mentioning a member is available to a bot.
 
-| <img src="./screenshots/en/en14.png" alt="" width="550" />  |
+| <img src="./screenshots/en/en13.png" alt="" width="550" />  |
 |------------------------------------------|
 
-To do this, the message text must have the format of:<br>
-`["@"|<numeric identifier user_id>|<member name>|]`
+For this purpose, the text of the message must be in the following format:<br>
+`["@"|<numeric identifier user_id>|"<member name>"|]`
 
-With the example above, let's assume that Fred Smith has a member ID 345. To get the message like in the example the message test sent by the bot must be of the following format:<br>
-`["@"|345|Fred Smith] data generated Insert tag (Option+1)✅`
+With the example above, let's take that Fred Lambert has a member ID 345. To get the message like in the example, the message test sent by the bot must be of the following format:<br>
+`["@"|345|"Fred Lambert"] data generated ✅`
 
 ---
 
-The bot has the same message formatting abilities as a workspace member in Compass.<br>
+The bot can apply formatting to messages like a normal team member in Compass.<br>
 
 For example, you can change the typeface or highlight words in a certain color:
-- bold text font: *bold font*
-- italics in the text: _cursive_
+- bold text font: \*bold font\*
+- italics in the text: \_italic\_
 - strikethrough text: \~strikethrough text\~
 - text on a black background: \`text on a black background\`
 - text highlighted in green: \++green selection\++
 - text highlighted in pink: \--pink selection\--
 
-| <img src="./screenshots/en/en15.png" alt="" width="550" />  |
+| <img src="./screenshots/en/en14.png" alt="" width="550" />  |
 |------------------------------------------|
 
 
@@ -1090,10 +1079,8 @@ Here is the list of **system errors** that are displayed when invalid data is tr
 | 1 | There are no fields required for the request. |
 | 2 | The request token is not found. |
 | 3 | The bot is disabled or deleted — the request cannot be completed. |
-| 4 | Invalid signature for validating the transmitted data. |
 | 5 | You have reached the limit of errors when completing the request. |
 | 6 | Unknown error when executing an internal method for the request. |
-| 7 | The request has not been completed yet, please try again after a while. |
 | 8 | Invalid parameters for the request are specified. |
 | 9 | Invalid request method is specified. |
 
