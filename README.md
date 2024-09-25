@@ -1026,16 +1026,22 @@ List of possible errors:
 
 ### Additional message formatting
 
-The function of mentioning a member is available to a bot.
+The function of mentioning a member or members with the same badge is available to a bot.
 
 | <img src="./screenshots/en/en13.png" alt="" width="550" />  |
 |------------------------------------------|
 
 For this purpose, the text of the message must be in the following format:<br>
-`["@"|<numeric identifier user_id>|"<member name>"|]`
+`["@"|<numeric identifier user_id>|"<member name>"]`
 
 With the example above, let's take that Fred Lambert has a member ID 345. To get the message like in the example, the message test sent by the bot must be of the following format:<br>
 `["@"|345|"Fred Lambert"] data generated ✅`
+
+The text of the message containing a badge mention must be in the following format:</br>
+`["@"|0|"all"]` – to mention all people in a chat;</br>
+`["@"|0|"manager"]` – to mention all members having “manager” badge.
+
+For example: `["@"|0|"all"] data generated ✅`
 
 ---
 
