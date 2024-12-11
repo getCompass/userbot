@@ -233,7 +233,7 @@ https://userbot.getcompass.com/api/v3/user/send
 >{
 >    "group_id": "3brLYUVlCEbNg6A0m6W2X2zkPyY8PN3Ijw6efI20gVJHGiy4xHOociXAmMh1o/i01gLTS8wHHx7JGrrzIL4z...",
 >    "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8vqbF5vNIi4T/YEKZh...",
->    "text": "/покажи список команд"
+>    "text": "/покажи список команд",
 >    "type": "group",
 >    "user_id": 12345,
 >}
@@ -251,14 +251,13 @@ https://userbot.getcompass.com/api/v3/user/send
 >{
 >     "group_id": "",
 >     "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8vqbF5vNIi4T/YEKZh...",
->     "text": "/покажи список команд"
+>     "text": "/покажи список команд",
 >     "type": "single",
 >     "user_id": 12345,
 >}
 >```
 
-⚠️ Обратите внимание: на ваш сервис отправляются только те сообщения, текст которых
-совпадает с шаблоном команд, прописанных в настройках бота вашей команды.
+⚠️ Обратите внимание: на ваш сервис отправляются только сообщения, текст которых начинается с символа «/». 
 **Другие сообщения из чата не отправляются на webhook.**
 
 Запрос будет содержать header-заголовок с токеном того бота, которому принадлежит отправленная команда:<br>
@@ -830,7 +829,7 @@ URL для On-premise версии продукта: `https://<yourdomain>/userb
 
 | Название | Тип | Свойство | Описание |
 | -------- | --- | --- | -------- |
-| command_list | array | обязательный | Новый список строк-команд для бота (максимум 30 команд для бота). |
+| command_list | array | обязательный | Новый список строк-команд для бота (максимум 100 команд для бота). |
 
 Несколько правил для установки команд:
 

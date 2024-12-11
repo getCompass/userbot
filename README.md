@@ -225,7 +225,7 @@ When a member sends a command to a bot with "Respond to commands" mode enabled, 
 >{
 >    "group_id": "3brLYUVlCEbNg6A0m6W2X2zkPyY8PN3Ijw6efI20gVJHGiy4xHOociXAmMh1o/i01gLTS8wHHx7JGrrzIL4z...",
 >    "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8vqbF5vNIi4T/YEKZh...",
->    "text": "/show command list"
+>    "text": "/show command list",
 >    "type": "group",
 >    "user_id": 12345,
 >}
@@ -243,13 +243,13 @@ When a member sends a command to a bot with "Respond to commands" mode enabled, 
 >{
 >     "group_id": "",
 >     "message_id": "oDT9FLRWjDOX0+4smgkCn039jKIce+NUE90zy9neDKvh6ubLMDGU/Cee5e07avTPFT/WcnAJIXFxBYmT8vqbF5vNIi4T/YEKZh...",
->     "text": "/show command list"
+>     "text": "/show command list",
 >     "type": "single",
 >     "user_id": 12345,
 >}
 >```
 
-⚠️ Please note: only those messages are sent to your service, the text of which matches the template of commands prescribed in your team bot settings. **Other messages from the chat are not sent to the webhook**.
+⚠️ Please note: only messages that start with “/” are sent to your service. **Other messages from the chat are not sent to the webhook.**
 
 The request will be signed with a header using the token of the bot to which the sent command belongs:<br>
 >header "**Authorization: bearer={bot token}**".<br>
@@ -816,7 +816,7 @@ The following parameters must be specified in the request body:
 
 | Name | Type | Property | Description |
 | -------- | --- | --- | -------- |
-| command_list | array | required | A new list of command lines for the bot (maximum 30 commands for the bot). |
+| command_list | array | required | A new list of command lines for the bot (maximum 100 commands for the bot). |
 
 A few rules for setting commands:
 
