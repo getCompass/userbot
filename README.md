@@ -1004,7 +1004,7 @@ URL for On-premise version of the product: `https://<yourdomain>/file1/api/userb
 
 ⚠️ File upload restrictions:
 
-- 256 MB is the maximum file size available
+- 512 MB is the maximum file size available
 - one token allows uploading only one file and it's not possible to use it for uploading another one
 - max. 50 files are available for upload within 5 minutes
 
