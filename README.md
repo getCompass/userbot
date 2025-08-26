@@ -1130,3 +1130,32 @@ Here is the **list of errors** that are displayed when a request fails, for exam
 
 For your convenience, we have created the Library for working with the Compass app Userbot API:<br>
 [A library for interacting with the Compass Userbot API](https://github.com/getCompass/php_lib_userbot). <br>
+
+## Postman: pre-built collection and environment settings
+
+To get started quickly with the Compass Userbot API, download the files from the `postman/` directory of this repository and import them into Postman.
+
+**Postman Collection**  
+File upload/download, message sending, webhook management, command configuration, etc.
+
+**Important:** The collection contains GET requests without parameters or body.
+They are used only as section headers with descriptions of the following request.
+Right below the header you'll find the working endpoint that performs the relevant operation.
+
+[View Collection](postman/compass_userbot_api.postman_collection.json)
+
+**SaaS Environment**  
+Variables:  
+- `api_base_url` — `https://userbot.getcompass.com`  
+- `bot_token`    — your bot token  
+
+[View SaaS Environment](postman/saas_environment.postman_environment.json)
+
+**On-Premise Environment**  
+Variables:  
+- `api_base_url` — your domain, e.g. `https://<yourdomain>/userbot/`  
+- `bot_token`    — your bot token  
+
+[View On-Premise Environment](postman/onpremise_environment.postman_environment.json)
+
+**Note:** after importing, open the environment settings and fill in `api_base_url` and `bot_token` with your own values.

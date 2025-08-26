@@ -1,0 +1,910 @@
+{
+	"info": {
+		"_postman_id": "ab4073c2-e836-4f2f-a1bb-508d6f45b2fc",
+		"name": "compass_userbot_api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31635539",
+		"_collection_link": "https://martian-moon-585807.postman.co/workspace/Compass-Bot~82ebd5e0-9d73-4cfc-87d7-fd8ca7b61b56/collection/31635539-ab4073c2-e836-4f2f-a1bb-508d6f45b2fc?action=share&source=collection_link&creator=31635539"
+	},
+	"item": [
+		{
+			"name": "Uploading and sending files",
+			"item": [
+				{
+					"name": "1) Get file download URL",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "file/getUrl",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Extracting the “file_token” value from the JSON response and saving it as a Postman global variable\r",
+									"pm.globals.set(\"file_token\", pm.response.json().response.file_token);\r",
+									"\r",
+									"// Extracting the “node_url” value from the JSON response and saving it as a Postman global variable\r",
+									"pm.globals.set(\"node_url\", pm.response.json().response.node_url);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer={{bot_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{api_base_url}}api/v3/file/getUrl",
+							"protocol": "https",
+							"host": [
+								"{{api_base_url}}api"
+							],
+							"path": [
+								"v3",
+								"file",
+								"getUrl"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2) Upload file to the server",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "files/upload",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Extracting the “file_id” value from the JSON response and saving it as a Postman global variable",
+									"pm.globals.set(\"file_id\", pm.response.json().response.file_id);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer={{bot_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "token",
+									"value": "{{file_token}}",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"description": "Attach a file for uploading",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{node_url}}",
+							"host": [
+								"{{node_url}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.1) Send file to the user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user/send",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer={{bot_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": 160004,\n  \"file_id\": \"{{file_id}}\",\n  \"type\": \"file\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{api_base_url}}/api/v3/user/send",
+							"protocol": "https",
+							"host": [
+								"{{api_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"user",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3.2) Send file to group",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "group/send",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer={{bot_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"group_id\": \"group_id\",\n  \"file_id\": \"{{file_id}}\",\n  \"type\": \"file\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{api_base_url}}/api/v3/group/send",
+							"protocol": "https",
+							"host": [
+								"{{api_base_url}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"group",
+								"send"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Send a message to the user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user/send",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer={{bot_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\": \"[\\\"@\\\"|160004|\\\"Иван\\\"]\",\n    \"type\": \"text\",               \n    \"user_id\": 285200              \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{api_base_url}}api/v3/user/send",
+					"protocol": "https",
+					"host": [
+						"{{api_base_url}}api"
+					],
+					"path": [
+						"v3",
+						"user",
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send a message to the group",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "group/send",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer={{bot_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"group_id\": \"group_id\",\n    \"text\": \"[\\\"@\\\"|0|\\\"all\\\"]\",\n    \"type\": \"text\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{api_base_url}}api/v3/group/send",
+					"protocol": "https",
+					"host": [
+						"{{api_base_url}}api"
+					],
+					"path": [
+						"v3",
+						"group",
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send a message to the thread",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "thread/send",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer={{bot_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"message_id\": \"message_id\",\n    \"text\": \"Hello!\",\n    \"type\": \"text\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{api_base_url}}api/v3/thread/send",
+					"protocol": "https",
+					"host": [
+						"{{api_base_url}}api"
+					],
+					"path": [
+						"v3",
+						"thread",
+						"send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add reaction",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "message/addReaction",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer={{bot_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"message_id\": \"message_id\",\n  \"reaction\": \":blush:\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{api_base_url}}api/v3/message/addReaction",
+					"protocol": "https",
+					"host": [
+						"{{api_base_url}}api"
+					],
+					"path": [
+						"v3",
+						"message",
+						"addReaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove reaction",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "message/removeReaction",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer={{bot_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"message_id\": \"message_id\",\n    \"reaction\": \":blush:\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{api_base_url}}api/v3/message/removeReaction",
+					"protocol": "https",
+					"host": [
+						"{{api_base_url}}api"
+					],
+					"path": [
+						"v3",
+						"message",
+						"removeReaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get member list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user/getList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer={{bot_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"count\": 300,\n  \"offset\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{api_base_url}}api/v3/user/getList",
+					"protocol": "https",
+					"host": [
+						"{{api_base_url}}api"
+					],
+					"path": [
+						"v3",
+						"user",
+						"getList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set the webhook version",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "webhook/setVersion",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer={{bot_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"version\": 3\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{api_base_url}}api/v3/webhook/setVersion",
+					"protocol": "https",
+					"host": [
+						"{{api_base_url}}api"
+					],
+					"path": [
+						"v3",
+						"webhook",
+						"setVersion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the webhook version",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "webhook/getVersion",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer={{bot_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{api_base_url}}api/v3/webhook/getVersion",
+					"protocol": "https",
+					"host": [
+						"{{api_base_url}}api"
+					],
+					"path": [
+						"v3",
+						"webhook",
+						"getVersion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update bot command list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "command/update",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer={{bot_token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"command_list\": [\r\n            \"/send text to a private chat\",\r\n            \"/send text to a group chat\"\r\n     ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{api_base_url}}api/v3/command/update",
+					"protocol": "https",
+					"host": [
+						"{{api_base_url}}api"
+					],
+					"path": [
+						"v3",
+						"command",
+						"update"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
