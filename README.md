@@ -1009,7 +1009,7 @@ URL for On-premise version of the product: `https://<yourdomain>/file1/api/userb
   - Cloud version of the product — 512 MB
   - On-premise version of the product — 2 GB (size can be changed by the server administrator)
 - one token allows uploading only one file and it's not possible to use it for uploading another one
-- max. 50 files are available for upload within 5 minutes
+- max. 100 files are available for upload within 5 minutes
 
 After a successful file loading (synchronous execution - the file will be loaded immediately) the response from the method will return:
 
