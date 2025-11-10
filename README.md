@@ -49,8 +49,9 @@ After permissions are set, the sidebar will be updated and managing bot option w
 |------------------------------------------|
 
 When creating a bot you may set the following parameters:
+- bot avatar
 - bot name
-- bot purpose
+- bot description
 - webhook, where member commands will be redirected
 
 Webhook is your service's URL. After setting it up, the bot is enabled to respond to the commands by redirecting them to the address you specified.
@@ -1004,7 +1005,9 @@ URL for On-premise version of the product: `https://<yourdomain>/file1/api/userb
 
 ⚠️ File upload restrictions:
 
-- 512 MB is the maximum file size available
+- maximum file size:
+  - Cloud version of the product — 512 MB
+  - On-premise version of the product — 2 GB (size can be changed by the server administrator)
 - one token allows uploading only one file and it's not possible to use it for uploading another one
 - max. 50 files are available for upload within 5 minutes
 
